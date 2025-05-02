@@ -12,11 +12,12 @@
     </parent>
 
     <groupId>ch.epfl.bio410</groupId>
-    <artifactId>homework-d-tracking-assignment</artifactId>
+    <artifactId>project</artifactId>
     <version>1.0.2-SNAPSHOT</version>
 
-    <name>Homework D - Tracking of particles</name>
-    <description>Track particles according different cost functions and compare the results</description>
+    <name>Project - SPB-Spot in bacteria - Assignment </name>
+    <description>“I would like to get quantitative information about the position and the mobility of the replisome foci in my bacteria.
+        I also would like to compare the replisome foci mobility between the different colonies.” </description>
     <inceptionYear>2024</inceptionYear>
     <url>https://edu.epfl.ch/coursebook/en/bioimage-informatics-BIO-410</url>
     <organization>
