@@ -1,30 +1,31 @@
 package ch.epfl.bio410;
 
+import ch.epfl.bio410.graph.PartitionedGraph;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.GenericDialog;
 import net.imagej.ImageJ;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
+import static ch.epfl.bio410.utils.UtilsReplisomes.segmentReplisome;
 
 /**
  */
 @Plugin(type = Command.class, menuPath = "Plugins>BII>Replisome_tracking")
 public class Replisome_tracking implements Command {
 
-
-	private static String inputFolder = "";
-
 	@Override
 	public void run() {
 		
 		//Open the image based on the path given by the GUI
 		//ImagePlus imp = IJ.getImage();
-		ImagePlus imp = IJ.openImage("data/Merged-1.tif");
+		ImagePlus imp = IJ.openImage("data/light_Merged2.tif");
 		imp.show();
+		// Detection
+		segmentReplisome(imp);
 
 	}
+
 
 	/**
 	 * This main function serves for development purposes.
