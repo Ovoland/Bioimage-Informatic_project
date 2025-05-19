@@ -8,23 +8,19 @@ import ch.epfl.bio410.graph.Spots;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.plugin.ChannelSplitter;
-import ij.plugin.GaussianBlur3D;
-import ij.plugin.ImageCalculator;
 import ij.plugin.filter.MaximumFinder;
-import ij.plugin.frame.RoiManager;
-import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
 import java.awt.*;
 
-public class UtilsReplisomes {
+public class replisomeTracking {
 
     private static final double threshold = 100;  // Detection parameters, threshold of the localmax TODO : adapt it
-    private static double costmax = 0.01;	// Cost parameters, maximum cost allowed to link spots togethers TODO : adapt it
+    private static double costmax = 0.008;	// Cost parameters, maximum cost allowed to link spots togethers TODO : adapt it
     private static final double lambda = 0.8; 	// Cost parameters, hyperparameter to balance cost function terms TODO : adapt it
 
 
-    public static void segmentReplisome(ImagePlus imp){
+    public static PartitionedGraph trackReplisome(ImagePlus imp){
         ImagePlus[] channels = ChannelSplitter.split(imp);
         ImagePlus replisome = channels[1];
 
@@ -37,7 +33,10 @@ public class UtilsReplisomes {
 
         // Linking trajectories
         PartitionedGraph trajectories = trackToNearestTrajectory(frames, cost);
+
         trajectories.drawLines(imp);
+
+        return trajectories;
     }
 
     private static PartitionedGraph detectReplisome(ImagePlus imp, double threshold, boolean excludeOnEdges){
@@ -53,7 +52,7 @@ public class UtilsReplisomes {
             MaximumFinder maxFinder = new MaximumFinder();
             Polygon poly = maxFinder.getMaxima(ip,threshold,excludeOnEdges);
             Spots spots = new Spots();
-            for(int n = 0; n <= poly.npoints; n++){
+            for(int n = 0; n < poly.npoints; n++){
                 int x = poly.xpoints[n];
                 int y = poly.ypoints[n];
                 double valueImage = ip.getPixelValue(x, y);
