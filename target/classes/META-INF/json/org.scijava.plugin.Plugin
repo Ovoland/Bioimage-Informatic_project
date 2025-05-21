@@ -1,1 +1,1 @@
-{"class":"ch.epfl.bio410.Replisome_tracking","values":{"menuPath":"Plugins>BII>Replisome_tracking","type":"org.scijava.command.Command"}}{"class":"ch.epfl.bio410.Tracking_Bright_Spots","values":{"menuPath":"Plugins>BII>Tracking_Particles","type":"org.scijava.command.Command"}}
+{"class":"ch.epfl.bio410.detectBacteria.DetectBacteria","values":{"menuPath":"Plugins>BII>detectBacteria","type":"org.scijava.command.Command"}}{"class":"ch.epfl.bio410.Tracking_Bright_Spots","values":{"menuPath":"Plugins>BII>Tracking_Particles","type":"org.scijava.command.Command"}}
