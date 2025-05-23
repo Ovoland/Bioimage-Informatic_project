@@ -1,29 +1,34 @@
 package ch.epfl.bio410;
 
 import ch.epfl.bio410.graph.PartitionedGraph;
+import ch.epfl.bio410.graph.Spot;
+import ch.epfl.bio410.graph.Spots;
+import ch.epfl.bio410.utils.segmentBacteria;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imagej.ImageJ;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
-import static ch.epfl.bio410.utils.UtilsReplisomes.segmentReplisome;
+import static ch.epfl.bio410.utils.motionMeasurement.measureMotion;
+import static ch.epfl.bio410.utils.replisomeTracking.trackReplisome;
 
 /**
  */
 @Plugin(type = Command.class, menuPath = "Plugins>BII>Replisome_tracking")
-public class Replisome_tracking implements Command {
+public class main implements Command {
 
 	@Override
 	public void run() {
 		
 		//Open the image based on the path given by the GUI
 		//ImagePlus imp = IJ.getImage();
-		ImagePlus imp = IJ.openImage("data/light_Merged2.tif");
+		ImagePlus imp = IJ.openImage("data/light_merged2_late.tif");
 		imp.show();
 		// Detection
-		segmentReplisome(imp);
-
+		PartitionedGraph trajectories = trackReplisome(imp);
+		measureMotion(imp, trajectories);
+		segmentBacteria.BacteriaSegmentation(imp);
 	}
 
 
