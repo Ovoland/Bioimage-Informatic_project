@@ -26,8 +26,8 @@ public class main implements Command {
 		ImagePlus imp = IJ.openImage("data/light_merged2_late.tif");
 		imp.show();
 		// Detection
-		//PartitionedGraph trajectories = trackReplisome(imp);
-		//measureMotion(imp, trajectories);
+		PartitionedGraph trajectories = trackReplisome(imp);
+		measureMotion(imp, trajectories);
 		segmentBacteria.BacteriaSegmentation(imp);
 	}
 

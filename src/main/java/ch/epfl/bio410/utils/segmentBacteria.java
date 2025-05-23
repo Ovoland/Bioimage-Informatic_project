@@ -62,10 +62,12 @@ public class segmentBacteria {
         double[] width = rt.getColumn("Width");
         double[] height = rt.getColumn("Height");
 
-        Bacteria[][] candidates;
+
+        //Make the extraction frame by frame
+        Bacteria[][] candidates ;
         for(int iParticule= 0; iParticule < rt.size(); ++iParticule){
             Bacteria bacteria = new Bacteria(xCentroid[iParticule],yCentroid[iParticule],bx[iParticule],by[iParticule],width[iParticule],height[iParticule]);
-            candidates[rt.getValue("Slice",iParticule)].pushBack(bacteria);
+            //candidates[rt.getValue("Slice",iParticule)].pushBack(bacteria);
         }
         Roi[] roi = rm.getRoisAsArray();
         for (Roi r : roi) {

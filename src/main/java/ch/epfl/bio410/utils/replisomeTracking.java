@@ -40,6 +40,12 @@ public class replisomeTracking {
     }
 
     private static PartitionedGraph detectReplisome(ImagePlus imp, double threshold, boolean excludeOnEdges){
+        //Denoising step
+
+
+        //IJ.run("Omnipose ...", "env_path=C:\\Users\\ovola\\anaconda3\\envs\\omnipose env_type=conda model=bact_phase_omni model_path=C:\\Fiji.app diameter=30 ch1=0 ch2=-1 additional_flags=[--omni, --cluster]");
+        //IJ.run(imp, "Non-local Means Denoising", "sigma=15 smoothing_factor=1 auto stack");
+
         //get the number of images in a stack
         int stackSize = imp.getNFrames();
 
