@@ -85,84 +85,58 @@ public class DetectBacteria implements Command {
         int nFrames = impSkeleton.getNFrames();
         int sizeX = impSkeleton.getWidth();
         int sizeY = impSkeleton.getHeight();
-        int maxLength = 13;
-        PartitionedGraph extremitiesGraph = new PartitionedGraph();
-        //PartitionedGraph bacterias = new PartitionedGraph();
-        int counter = 0;
-        ImagePlus impSegmentation = null;
+        int maxLength = 18;
         for (int t=0; t<nFrames; t++){
             impSkeleton.setPosition(1, 1, 1 + t);
+            impThresholded.setPosition(1,1,1 + t);
             ImageProcessor ip = impSkeleton.getProcessor();
-            Spots extremities = new Spots();
-            Boolean remainingExtremities = Boolean.TRUE;
-            PartitionedGraph bacterias = new PartitionedGraph();
-            while (remainingExtremities) {
-                for (int x = 0; x < sizeX; x++) {
-                    for (int y = 0; y < sizeY; y++) {
-                        float pixelValue = ip.getPixelValue(x, y);
-                        float neighborsValue = ip.getPixelValue(x - 1, y + 1) + ip.getPixelValue(x, y + 1) + ip.getPixelValue(x + 1, y + 1) + ip.getPixelValue(x - 1, y) + ip.getPixelValue(x + 1, y) + ip.getPixelValue(x - 1, y - 1) + ip.getPixelValue(x, y - 1) + ip.getPixelValue(x + 1, y - 1);
-                        //System.out.println(pixelValue);
-                        //System.out.println(neighborsValue);
-                        if (pixelValue != 0 && neighborsValue == 255) {
-                            Spot extremity = new Spot(x, y, t, pixelValue);
-                            extremities.add(extremity);
-                            counter++;
-                            Spots bacteriaUnit = new Spots();
-                            bacteriaUnit.add(extremity);
-                            int x2 = x;
-                            int y2 = y;
-                            for (int i = 0; i < maxLength - 1; i++) {
-                                float[][] nextPixels = {{x2 - 1, x2, x2 + 1, x2 - 1, x2 + 1, x2 - 1, x2, x2 + 1},
+            ImageProcessor ipOut = impThresholded.getProcessor();
+            IJ.log("Beginning Processing of frame "+(t+1));
+            int counter = 0;
+            for (int x = 0; x < sizeX; x++) {
+                for (int y = 0; y < sizeY; y++) {
+                    float pixelValue = ip.getPixelValue(x, y);
+                    float neighborsValue = ip.getPixelValue(x - 1, y + 1) + ip.getPixelValue(x, y + 1) + ip.getPixelValue(x + 1, y + 1) + ip.getPixelValue(x - 1, y) + ip.getPixelValue(x + 1, y) + ip.getPixelValue(x - 1, y - 1) + ip.getPixelValue(x, y - 1) + ip.getPixelValue(x + 1, y - 1);
+                    //System.out.println(pixelValue);
+                    //System.out.println(neighborsValue);
+                    if (pixelValue != 0 && neighborsValue == 255) {
+                        counter++;
+                        int x2 = x;
+                        int y2 = y;
+                        for (int i = 0; i < maxLength; i++) {
+                            float[][] nextPixels = {{x2 - 1, x2, x2 + 1, x2 - 1, x2 + 1, x2 - 1, x2, x2 + 1},
                                         {y2 + 1, y2 + 1, y2 + 1, y2, y2, y2 - 1, y2 - 1, y2 - 1},
                                         {ip.getPixelValue(x2 - 1, y2 + 1), ip.getPixelValue(x2, y2 + 1), ip.getPixelValue(x2 + 1, y2 + 1), ip.getPixelValue(x2 - 1, y2), ip.getPixelValue(x2 + 1, y2), ip.getPixelValue(x2 - 1, y2 - 1), ip.getPixelValue(x2, y2 - 1), ip.getPixelValue(x2 + 1, y2 - 1)}};
-                                for (int j = 0; j < nextPixels[2].length; j++) {
-                                    if (nextPixels[2][j] != 0) {
-                                        ip.putPixelValue(x2, y2, 0);
-                                        x2 = Math.round(nextPixels[0][j]);
-                                        y2 = Math.round(nextPixels[1][j]);
-                                        Spot nextPixel = new Spot(x2, y2, t, nextPixels[2][j]);
-                                        bacteriaUnit.add(nextPixel);
-                                        break;
-                                    }
+                            for (int j = 0; j < nextPixels[2].length; j++) {
+                                if (nextPixels[2][j] != 0) {
+                                    ip.putPixelValue(x2, y2, 0);
+                                    x2 = Math.round(nextPixels[0][j]);
+                                    y2 = Math.round(nextPixels[1][j]);
+                                    Spot nextPixel = new Spot(x2, y2, t, nextPixels[2][j]);
+                                    break;
                                 }
                             }
-                            bacterias.add(bacteriaUnit);
-                            x = -1;
-                            y = -1;
                         }
+
+                        ipOut.putPixelValue(x2, y2+1, 0);
+                        ipOut.putPixelValue(x2-1, y2, 0);
+                        ipOut.putPixelValue(x2, y2, 0);
+                        ipOut.putPixelValue(x2+1, y2, 0);
+                        ipOut.putPixelValue(x2, y2-1, 0);
+                        x = 0;
+                        y = 0;
                     }
                 }
-                extremitiesGraph.add(extremities);
-                remainingExtremities = Boolean.FALSE;
-                bacterias.drawLines(impDup);
-                IJ.run("Duplicate...", "duplicate frames="+t+1+" title=impT");
-                //IJ.selectWindow("impT");
-                ImagePlus impS = IJ.getImage();
-                if (t==0){impSegmentation = impS;}
-                impSegmentation = Concatenator.run(impSegmentation,impS);
-                impS.close();
-                IJ.selectWindow("Segmenting");
             }
+            IJ.log(counter+" bacteria found");
         }
-        //extremitiesGraph.drawSpots(impThresholded);
+        //impSkeleton.close();
+        IJ.run("Set Measurements...", "centroid center area redirect=None decimal=3");
+        IJ.run(impThresholded, "Analyze Particles...", "display overlay add stack");
 
-        System.out.println(nFrames);
-/*
-        for (int i=0; i<nFrames; i++) {
-            impThresholded.setPosition(1,1, i+1);
-            //int n = impThresholded.getSlice();C:\Users\chaye\Autres Documents\BIO410 - Projet SPB
 
-            //IJ.run("Set Measurements...", "area mean min centroid center perimeter display redirect=None decimal=3");
-            IJ.run("Set Measurements...", "area display redirect=None decimal=3");
-            IJ.run(impThresholded, "Analyze Particles...", "display overlay add");
-        }
-        //impOverlay.changes = false;
-        //impOverlay.close();
-        /*
-        ***********************************************************
-        */
 
-/*
+
         // get the RoiManager
         RoiManager rm = RoiManager.getRoiManager();
         Prefs.showAllSliceOnly = true;
@@ -171,8 +145,8 @@ public class DetectBacteria implements Command {
         int nROI = rm.getCount(); // get the number of ROIs within the ROI Manager
         rm.runCommand(impThresholded,"Measure");
         ResultsTable rt = ResultsTable.getResultsTable();
-        Double maxArea = 3.0 ;
-        Double minArea = 0.5 ;
+        Double maxArea = 18.0 ;
+        Double minArea = 0.05 ;
 
 
         IJ.selectWindow(channel1);
@@ -192,7 +166,7 @@ public class DetectBacteria implements Command {
 
         // deselect all the ROIs to be able to make a measurement on all ROIs
         rm.deselect();
-*/
+
         // clear results  in the ResultsTable
         //IJ.run("Clear Results", "");
 
