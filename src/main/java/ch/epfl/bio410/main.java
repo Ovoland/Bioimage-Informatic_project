@@ -27,7 +27,6 @@ public class main implements Command {
 	@Override
 	public void run() {
 
-		/*
 		//GUI
 		GenericDialog gui = new GenericDialog("Tracking Bright Spots");
 
@@ -35,17 +34,17 @@ public class main implements Command {
 		gui.addFileField("Choose File",defaultPath);
 
 		gui.addChoice("Choose method of tracking",methods,methods[0]);
-		gui.addMessage("**The Skeleton Segmentation is an approximated method");
+		gui.addMessage("**The Skeleton Segmentation is an approximated method**");
 		gui.addMessage("**Only use the Simple Thresholding method if the bacterias are spaced out enough**");
 		gui.showDialog();
 
 		String filePath = gui.getNextString();
 		String method = gui.getNextChoice();
-		 */
+
 
 		//Open the image based on the path given by the GUI
-		//ImagePlus imp = IJ.getImage(filePath);
-		ImagePlus imp = IJ.openImage("data/Merged-2_light.tif");
+		ImagePlus imp = IJ.openImage(filePath);
+		//ImagePlus imp = IJ.openImage("data/Merged-2_light.tif");
 		imp.show();
 
 		// Repliosome Detection

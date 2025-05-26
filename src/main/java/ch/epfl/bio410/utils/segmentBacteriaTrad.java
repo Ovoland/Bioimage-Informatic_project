@@ -10,18 +10,20 @@ import ij.plugin.ChannelSplitter;
 import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
 
+import java.awt.*;
 import java.util.Arrays;
 
 public class segmentBacteriaTrad {
     public static void BacteriaSegmentation(ImagePlus img){
         ImagePlus[] channels = ChannelSplitter.split(img);
         ImagePlus bacteria = channels[0];
-        getROI(bacteria);
+        skeleton(bacteria);
     }
 
 
-    private static void getROI(ImagePlus img){
+    private static void skeleton(ImagePlus img){
         ImagePlus impThresholded = img.duplicate();
+        ImagePlus imp = img.duplicate();
         impThresholded.show();
 
         //Segmenting bacterias
@@ -33,11 +35,12 @@ public class segmentBacteriaTrad {
 
         //Make measurements
         IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
-        IJ.run(impThresholded, "Analyze Particles...", "display clear exclude overlay add composite stack");
-
+        IJ.run(impThresholded, "Analyze Particles...", "display overlay add stack");
+//clear exclude composite
         //get ROI manager
-        RoiManager rm = RoiManager.getRoiManager();
-
+        //RoiManager rm = RoiManager.getRoiManager();
+        getRoi(impThresholded, imp);
+/*
         // get the open ResultsTable
         ResultsTable rt = ResultsTable.getResultsTable();
 
@@ -63,7 +66,7 @@ public class segmentBacteriaTrad {
             rm.addRoi(r);
         }
         img.show();
-
+*/
 
 
 
@@ -129,6 +132,42 @@ public class segmentBacteriaTrad {
     }
 
 
+    private static void getRoi(ImagePlus img, ImagePlus img2){
+        String titleImg2 = "Bacterias";
+        img2.setTitle(titleImg2);
+        img2.show();
+
+        // get the RoiManager
+        RoiManager rm = RoiManager.getRoiManager();
+        Prefs.showAllSliceOnly = true;
+        RoiManager.restoreCentered(false);
+        Prefs.useNamesAsLabels = false;
+        int nROI = rm.getCount(); // get the number of ROIs within the ROI Manager
+        rm.runCommand(img,"Measure");
+        ResultsTable rt = ResultsTable.getResultsTable();
+        Double maxArea = 18.0 ;
+        Double minArea = 0.05 ;
+
+
+        IJ.selectWindow(titleImg2);
+        for (int j = 0; j < nROI; j++) {
+            rm.select(j); // select a specific roi
+            Double area = rt.getColumn("Area")[j];
+            if (area > maxArea | area < minArea) {
+                rm.runCommand(img2,"Delete");
+                rt.deleteRow(j);
+                nROI = rm.getCount();
+                j -= 1;
+            }
+            rm.runCommand("Update");
+        }
+
+        // deselect all the ROIs to be able to make a measurement on all ROIs
+        rm.deselect();
+
+
+
+    }
 
 
 }
