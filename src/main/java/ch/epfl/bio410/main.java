@@ -27,6 +27,7 @@ public class main implements Command {
 	@Override
 	public void run() {
 
+		/*
 		//GUI
 		GenericDialog gui = new GenericDialog("Tracking Bright Spots");
 
@@ -40,16 +41,19 @@ public class main implements Command {
 
 		String filePath = gui.getNextString();
 		String method = gui.getNextChoice();
+		 */
 
 		//Open the image based on the path given by the GUI
 		//ImagePlus imp = IJ.getImage(filePath);
-		ImagePlus imp = IJ.openImage("data/light_merged2_late.tif");
+		ImagePlus imp = IJ.openImage("data/Merged-2_light.tif");
 		imp.show();
 
 		// Repliosome Detection
-		PartitionedGraph trajectories = trackReplisome(imp);
-		measureMotion(imp, trajectories);
+		PartitionedGraph trajectories = trackReplisome(imp.duplicate());
+		measureMotion(imp.duplicate(), trajectories);
 
+
+		/*
 		//Bacteria Segmentation
 		if (method.equals(methods[0])) {
 			segmentBacteriaTrad.BacteriaSegmentation(imp);
@@ -58,6 +62,8 @@ public class main implements Command {
 		} else if (method.equals(methods[2])) {
 			segmentBacteria.BacteriaSegmentation(imp);
 		}
+		*/
+		segmentBacteriaTrad.BacteriaSegmentation(imp);
 	}
 
 

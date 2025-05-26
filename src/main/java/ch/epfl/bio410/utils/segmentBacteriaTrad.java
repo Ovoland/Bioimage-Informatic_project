@@ -3,13 +3,12 @@ package ch.epfl.bio410.utils;
 import ch.epfl.bio410.bacteria.Bacteria;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.Prefs;
 import ij.gui.Roi;
 import ij.measure.ResultsTable;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
-import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
-import net.haesleinhuepf.clij2.CLIJ2;
 
 import java.util.Arrays;
 
@@ -20,21 +19,6 @@ public class segmentBacteriaTrad {
         getROI(bacteria);
     }
 
-    private static void getBoundingBoxes(ImagePlus img){
-        CLIJ2 clij2 = CLIJ2.getInstance();
-        // get input parameters
-        ClearCLBuffer source = clij2.push(img);
-
-        // Execute operation on GPU
-        double[] resultBoundingBox = clij2.boundingBox(source);
-
-        // show result
-        System.out.println(Arrays.toString(resultBoundingBox));
-
-        // cleanup memory on GPU
-        clij2.release(source);
-    }
-
 
     private static void getROI(ImagePlus img){
         ImagePlus impThresholded = img.duplicate();
@@ -42,13 +26,14 @@ public class segmentBacteriaTrad {
 
         //Segmenting bacterias
         IJ.run(impThresholded, "Enhance Contrast...", "saturated=0.35 process_all");
-        IJ.run(impThresholded, "Make Binary", "method=Default calculate black");
+        IJ.run(impThresholded, "Make Binary", "calculate");
+        Prefs.blackBackground = false;
         IJ.run(impThresholded, "Skeletonize", "stack");
         drawingBacteria(impThresholded);
 
         //Make measurements
         IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
-        IJ.run(img, "Analyze Particles...", "display clear exclude overlay add composite stack");
+        IJ.run(impThresholded, "Analyze Particles...", "display clear exclude overlay add composite stack");
 
         //get ROI manager
         RoiManager rm = RoiManager.getRoiManager();
