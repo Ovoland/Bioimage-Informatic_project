@@ -111,10 +111,5 @@
             <groupId>net.imagej</groupId>
             <artifactId>imagej</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.haesleinhuepf</groupId>
-            <artifactId>clij2_</artifactId>
-            <version>2.5.0.1</version>
-        </dependency>
     </dependencies>
 </project>

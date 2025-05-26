@@ -31,7 +31,6 @@ public class main implements Command {
 		segmentBacteria.BacteriaSegmentation(imp);
 	}
 
-
 	/**
 	 * This main function serves for development purposes.
 	 * It allows you to run the plugin immediately out of

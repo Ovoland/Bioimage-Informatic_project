@@ -11,8 +11,6 @@ import ij.plugin.frame.RoiManager;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.stream.IntStream;
-import net.haesleinhuepf.clij2.CLIJ2;
-import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 
 public class segmentBacteria {
     public static void BacteriaSegmentation(ImagePlus img){
@@ -21,22 +19,6 @@ public class segmentBacteria {
         ImagePlus bacteria = channels[0];
         getROI(bacteria);
     }
-
-    private static void getBoundingBoxes(ImagePlus img){
-        CLIJ2 clij2 = CLIJ2.getInstance();
-        // get input parameters
-        ClearCLBuffer source = clij2.push(img);
-
-        // Execute operation on GPU
-        double[] resultBoundingBox = clij2.boundingBox(source);
-
-        // show result
-        System.out.println(Arrays.toString(resultBoundingBox));
-
-        // cleanup memory on GPU
-        clij2.release(source);
-    }
-
 
     private static void getROI(ImagePlus img){
         img.show();
