@@ -23,6 +23,7 @@ import static ch.epfl.bio410.utils.replisomeTracking.trackReplisome;
 public class main implements Command {
 
 	private String[] methods = {"Skeleton Segmentation", "Omnipose Segmentation", "Simple Thresholding"};
+	private double bactLength = 18;
 
 	@Override
 	public void run() {
@@ -36,10 +37,14 @@ public class main implements Command {
 		gui.addChoice("Choose method of tracking",methods,methods[0]);
 		gui.addMessage("**The Skeleton Segmentation is an approximated method**");
 		gui.addMessage("**Only use the Simple Thresholding method if the bacterias are spaced out enough**");
+		gui.addNumericField("Bacterial maximum lenght in pixel (if using Skeleton method)", bactLength);
 		gui.showDialog();
 
 		String filePath = gui.getNextString();
 		String method = gui.getNextChoice();
+		if (method.equals(methods[0])){
+			bactLength = gui.getNextNumber();
+		}
 
 
 		//Open the image based on the path given by the GUI
@@ -55,14 +60,14 @@ public class main implements Command {
 		/*
 		//Bacteria Segmentation
 		if (method.equals(methods[0])) {
-			segmentBacteriaTrad.BacteriaSegmentation(imp);
+			segmentBacteriaTrad.BacteriaSegmentation(imp,bactLength);
 		} else if (method.equals(methods[1])) {
 			//Omnipose
 		} else if (method.equals(methods[2])) {
 			segmentBacteria.BacteriaSegmentation(imp);
 		}
 		*/
-		segmentBacteriaTrad.BacteriaSegmentation(imp);
+		segmentBacteriaTrad.BacteriaSegmentation(imp, bactLength);
 	}
 
 

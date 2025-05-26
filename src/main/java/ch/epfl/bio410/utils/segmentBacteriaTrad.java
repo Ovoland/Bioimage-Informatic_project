@@ -14,10 +14,10 @@ import java.awt.*;
 import java.util.Arrays;
 
 public class segmentBacteriaTrad {
-    public static void BacteriaSegmentation(ImagePlus img){
+    public static void BacteriaSegmentation(ImagePlus img, double bactLength){
         ImagePlus[] channels = ChannelSplitter.split(img);
         ImagePlus bacteria = channels[0];
-        skeleton(bacteria);
+        skeleton(bacteria, bactLength);
     }
 
 
@@ -25,7 +25,7 @@ public class segmentBacteriaTrad {
     This function will process the given ImagePlus img to identify the skeletons of the bacterias as ROIs through an
     extremity sweep of the image once it is made binary and skeletonized. Then, it transfers the ROIs to the input img
      */
-    private static void skeleton(ImagePlus img){
+    private static void skeleton(ImagePlus img, double bactLength){
         ImagePlus impThresholded = img.duplicate();
         ImagePlus imp = img.duplicate();
         impThresholded.show();
@@ -35,7 +35,7 @@ public class segmentBacteriaTrad {
         IJ.run(impThresholded, "Make Binary", "calculate");
         Prefs.blackBackground = false;
         IJ.run(impThresholded, "Skeletonize", "stack");
-        drawingBacteria(impThresholded);
+        drawingBacteria(impThresholded, bactLength);
 
         //Make measurements & delimiting ROIs
         IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
@@ -50,19 +50,19 @@ public class segmentBacteriaTrad {
     /*
     This function will process a previously skeletonize image to identify bacteria of a maximum length in them. It
     operates by sweeping from the upper-left of the image to find extremities (only one neighbor of same pixel value).
-    Once one is found, it follows it for a maximum length in pixel or until it finds no more pixel of same value. While
+    Once one is found, it follows it for a maximum length bactLength in pixel or until it finds no more pixel of same value. While
     following the branch, it suppresses the pixels to allow for more extremities (for bacteria too close to each other).
     This is done in a duplicate of the input ImagePlus img. In the original, only the end pixel of the branch found and
     its 8 neighbors are suppressed to create a space with the surrounding bacterias and prevent their grouping.
      */
-    private static void drawingBacteria(ImagePlus img) {
+    private static void drawingBacteria(ImagePlus img, double bactLength) {
         ImagePlus impSkeleton = img.duplicate();
         impSkeleton.show();
 
         int nFrames = impSkeleton.getNFrames();
         int sizeX = impSkeleton.getWidth();
         int sizeY = impSkeleton.getHeight();
-        int maxLength = 18;
+        int maxLength = (int) bactLength;
 
         //Passing through frames
         for (int t = 0; t < nFrames; t++) {
