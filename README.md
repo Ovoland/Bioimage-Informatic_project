@@ -7,3 +7,5 @@ Alternative ML technique to detect bacterias:
 Other usefull ressources:
 - [FindMaxima documentation](https://imagej.net/ij/developer/api/ij/ij/ImagePlus.html)
 - 
+
+
