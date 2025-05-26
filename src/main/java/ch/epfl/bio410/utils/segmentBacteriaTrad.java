@@ -21,6 +21,10 @@ public class segmentBacteriaTrad {
     }
 
 
+    /*
+    This function will process the given ImagePlus img to identify the skeletons of the bacterias as ROIs through an
+    extremity sweep of the image once it is made binary and skeletonized. Then, it transfers the ROIs to the input img
+     */
     private static void skeleton(ImagePlus img){
         ImagePlus impThresholded = img.duplicate();
         ImagePlus imp = img.duplicate();
@@ -33,47 +37,25 @@ public class segmentBacteriaTrad {
         IJ.run(impThresholded, "Skeletonize", "stack");
         drawingBacteria(impThresholded);
 
-        //Make measurements
+        //Make measurements & delimiting ROIs
         IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
-        IJ.run(impThresholded, "Analyze Particles...", "display overlay add stack");
-//clear exclude composite
+        IJ.run(impThresholded, "Analyze Particles...", "display clear exclude composite overlay add stack");
+
         //get ROI manager
-        //RoiManager rm = RoiManager.getRoiManager();
         getRoi(impThresholded, imp);
-/*
-        // get the open ResultsTable
-        ResultsTable rt = ResultsTable.getResultsTable();
-
-        //get the coordinate of the centroid
-        double[] xCentroid = rt.getColumn("XM");
-        double[] yCentroid = rt.getColumn("YM");
-
-        //Get all the information of the bounding boxes
-        double[] bx = rt.getColumn("BX");
-        double[] by = rt.getColumn("BY");
-        double[] width = rt.getColumn("Width");
-        double[] height = rt.getColumn("Height");
-
-
-        //Make the extraction frame by frame
-        Bacteria[][] candidates ;
-        for(int iParticule= 0; iParticule < rt.size(); ++iParticule){
-            Bacteria bacteria = new Bacteria(xCentroid[iParticule],yCentroid[iParticule],bx[iParticule],by[iParticule],width[iParticule],height[iParticule]);
-            //candidates[rt.getValue("Slice",iParticule)].pushBack(bacteria);
-        }
-        Roi[] roi = rm.getRoisAsArray();
-        for (Roi r : roi) {
-            rm.addRoi(r);
-        }
-        img.show();
-*/
-
-
 
     }
 
 
-    private static void drawingBacteria(ImagePlus img){
+    /*
+    This function will process a previously skeletonize image to identify bacteria of a maximum length in them. It
+    operates by sweeping from the upper-left of the image to find extremities (only one neighbor of same pixel value).
+    Once one is found, it follows it for a maximum length in pixel or until it finds no more pixel of same value. While
+    following the branch, it suppresses the pixels to allow for more extremities (for bacteria too close to each other).
+    This is done in a duplicate of the input ImagePlus img. In the original, only the end pixel of the branch found and
+    its 8 neighbors are suppressed to create a space with the surrounding bacterias and prevent their grouping.
+     */
+    private static void drawingBacteria(ImagePlus img) {
         ImagePlus impSkeleton = img.duplicate();
         impSkeleton.show();
 
@@ -81,23 +63,29 @@ public class segmentBacteriaTrad {
         int sizeX = impSkeleton.getWidth();
         int sizeY = impSkeleton.getHeight();
         int maxLength = 18;
-        for (int t=0; t<nFrames; t++){
+
+        //Passing through frames
+        for (int t = 0; t < nFrames; t++) {
             impSkeleton.setPosition(1, 1, 1 + t);
-            img.setPosition(1,1,1 + t);
+            img.setPosition(1, 1, 1 + t);
             ImageProcessor ip = impSkeleton.getProcessor();
             ImageProcessor ipOut = img.getProcessor();
-            IJ.log("Beginning Processing of frame "+(t+1));
+            IJ.log("Beginning Processing of frame " + (t + 1));
             int counter = 0;
+
+            //Passing through images
             for (int x = 0; x < sizeX; x++) {
                 for (int y = 0; y < sizeY; y++) {
                     float pixelValue = ip.getPixelValue(x, y);
                     float neighborsValue = ip.getPixelValue(x - 1, y + 1) + ip.getPixelValue(x, y + 1) + ip.getPixelValue(x + 1, y + 1) + ip.getPixelValue(x - 1, y) + ip.getPixelValue(x + 1, y) + ip.getPixelValue(x - 1, y - 1) + ip.getPixelValue(x, y - 1) + ip.getPixelValue(x + 1, y - 1);
-                    //System.out.println(pixelValue);
-                    //System.out.println(neighborsValue);
+
+                    //Finding extremities
                     if (pixelValue != 0 && neighborsValue == 255) {
                         counter++;
                         int x2 = x;
                         int y2 = y;
+
+                        //Following extremities
                         for (int i = 0; i < maxLength; i++) {
                             float[][] nextPixels = {{x2 - 1, x2, x2 + 1, x2 - 1, x2 + 1, x2 - 1, x2, x2 + 1},
                                     {y2 + 1, y2 + 1, y2 + 1, y2, y2, y2 - 1, y2 - 1, y2 - 1},
@@ -112,26 +100,31 @@ public class segmentBacteriaTrad {
                             }
                         }
 
-                        ipOut.putPixelValue(x2, y2+1, 0);
-                        ipOut.putPixelValue(x2-1, y2, 0);
+                        //Suppressing end of branch
+                        ipOut.putPixelValue(x2, y2 + 1, 0);
+                        ipOut.putPixelValue(x2 - 1, y2, 0);
                         ipOut.putPixelValue(x2, y2, 0);
-                        ipOut.putPixelValue(x2+1, y2, 0);
-                        ipOut.putPixelValue(x2, y2-1, 0);
+                        ipOut.putPixelValue(x2 + 1, y2, 0);
+                        ipOut.putPixelValue(x2, y2 - 1, 0);
+
+                        //Resetting sweeping
                         x = 0;
                         y = 0;
                     }
                 }
             }
-            IJ.log(counter+" bacteria found");
+            IJ.log(counter + " bacteria found");
         }
         impSkeleton.close();
-
-
-
 
     }
 
 
+    /*
+    This function transfers ROIs from a first ImagePlus img to a second ImagePlus img2 while filtering for ROI size to
+    exclude over- or under-sized ROIs linked to non-bacterial particules in the image or reprouped bacteria which have
+    been badly segmented by the previous method.
+     */
     private static void getRoi(ImagePlus img, ImagePlus img2){
         String titleImg2 = "Bacterias";
         img2.setTitle(titleImg2);
@@ -164,8 +157,6 @@ public class segmentBacteriaTrad {
 
         // deselect all the ROIs to be able to make a measurement on all ROIs
         rm.deselect();
-
-
 
     }
 
