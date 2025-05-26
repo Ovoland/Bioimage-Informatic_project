@@ -1,4 +1,4 @@
-package ch.epfl.bio410.utils;
+package ch.epfl.bio410.segmentation;
 
 import ch.epfl.bio410.bacteria.Bacteria;
 import ij.IJ;
@@ -9,8 +9,6 @@ import ij.measure.ResultsTable;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
-
-import java.util.Arrays;
 
 public class segmentBacteriaTrad {
     public static void BacteriaSegmentation(ImagePlus img){

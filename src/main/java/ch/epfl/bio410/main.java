@@ -1,21 +1,16 @@
 package ch.epfl.bio410;
 
 import ch.epfl.bio410.graph.PartitionedGraph;
-import ch.epfl.bio410.graph.Spot;
-import ch.epfl.bio410.graph.Spots;
-import ch.epfl.bio410.utils.segmentBacteria;
-import ch.epfl.bio410.utils.segmentBacteriaTrad;
+import ch.epfl.bio410.segmentation.segmentBacteriaTrad;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.GenericDialog;
 import net.imagej.ImageJ;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
-import java.io.File;
+import static ch.epfl.bio410.measurments.MotionMeasurement.motionMeasurement;
+import static ch.epfl.bio410.tracking.ReplisomeTracking.replisomeTracking;
 
-import static ch.epfl.bio410.utils.motionMeasurement.measureMotion;
-import static ch.epfl.bio410.utils.replisomeTracking.trackReplisome;
 
 /**
  */
@@ -49,8 +44,8 @@ public class main implements Command {
 		imp.show();
 
 		// Repliosome Detection
-		PartitionedGraph trajectories = trackReplisome(imp.duplicate());
-		measureMotion(imp.duplicate(), trajectories);
+		PartitionedGraph trajectories = replisomeTracking(imp.duplicate());
+		motionMeasurement(imp.duplicate(), trajectories);
 
 
 		/*
@@ -60,7 +55,7 @@ public class main implements Command {
 		} else if (method.equals(methods[1])) {
 			//Omnipose
 		} else if (method.equals(methods[2])) {
-			segmentBacteria.BacteriaSegmentation(imp);
+			SegmentBacteria.BacteriaSegmentation(imp);
 		}
 		*/
 		segmentBacteriaTrad.BacteriaSegmentation(imp);

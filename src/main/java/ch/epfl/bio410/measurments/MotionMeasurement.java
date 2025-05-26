@@ -1,22 +1,19 @@
-package ch.epfl.bio410.utils;
+package ch.epfl.bio410.measurments;
 
 
 
 import ch.epfl.bio410.graph.PartitionedGraph;
 import ch.epfl.bio410.graph.Spot;
 import ch.epfl.bio410.graph.Spots;
-import gnu.trove.TCollections;
 import ij.ImagePlus;
 import ij.gui.Plot;
 import ij.process.ImageProcessor;
 
 import java.awt.*;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.stream.IntStream;
 
-public class motionMeasurement {
-    public static void measureMotion(ImagePlus img, PartitionedGraph trajectories){
+public class MotionMeasurement {
+    public static void motionMeasurement(ImagePlus img, PartitionedGraph trajectories){
         double[] distances = computeTraveledDistance(trajectories);
         plotMotion(distances);
         double[] velocities = computeVelocity(distances, trajectories);

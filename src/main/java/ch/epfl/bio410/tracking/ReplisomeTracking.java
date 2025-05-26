@@ -1,4 +1,4 @@
-package ch.epfl.bio410.utils;
+package ch.epfl.bio410.tracking;
 
 import ch.epfl.bio410.cost.AbstractCost;
 import ch.epfl.bio410.cost.DistanceAndIntensityCost;
@@ -13,14 +13,14 @@ import ij.process.ImageProcessor;
 
 import java.awt.*;
 
-public class replisomeTracking {
+public class ReplisomeTracking {
 
     private static final double threshold = 100;  // Detection parameters, threshold of the localmax TODO : adapt it
     private static double costmax = 0.008;	// Cost parameters, maximum cost allowed to link spots togethers TODO : adapt it
     private static final double lambda = 0.8; 	// Cost parameters, hyperparameter to balance cost function terms TODO : adapt it
 
 
-    public static PartitionedGraph trackReplisome(ImagePlus imp){
+    public static PartitionedGraph replisomeTracking(ImagePlus imp){
         ImagePlus[] channels = ChannelSplitter.split(imp);
         ImagePlus replisome = channels[1];
 

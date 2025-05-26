@@ -1,4 +1,4 @@
-package ch.epfl.bio410.utils;
+package ch.epfl.bio410.segmentation;
 
 import ch.epfl.bio410.bacteria.Bacteria;
 import ij.IJ;
@@ -8,12 +8,8 @@ import ij.measure.ResultsTable;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.frame.RoiManager;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.stream.IntStream;
-
-public class segmentBacteria {
-    public static void BacteriaSegmentation(ImagePlus img){
+public class SegmentBacteria {
+    public static void segmentBacteria(ImagePlus img){
         ImagePlus imp = IJ.openImage("data/bacteria.tif");
         ImagePlus[] channels = ChannelSplitter.split(imp);
         ImagePlus bacteria = channels[0];
