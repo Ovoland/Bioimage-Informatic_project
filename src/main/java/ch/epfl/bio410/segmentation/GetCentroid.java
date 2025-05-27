@@ -14,6 +14,9 @@ public class GetCentroid {
     public static PartitionedGraph getCentroid(ImagePlus InputImg) {
         ImagePlus img = InputImg.duplicate();
 
+        //to prevent the log: ParticleAnalyzer: threshold not set; assumed to be 0-0 ("Black background" not set)
+        IJ.setAutoThreshold(img, "Default");
+
         IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
         IJ.run(img, "Analyze Particles...", "display clear exclude overlay add composite stack");
 
@@ -58,7 +61,6 @@ public class GetCentroid {
             }
         }
         graph.add(spots);
-        System.out.println(graph.size() + " bacteria found in " + graph.get(0).size() + " frames.");
         return graph;
 
 

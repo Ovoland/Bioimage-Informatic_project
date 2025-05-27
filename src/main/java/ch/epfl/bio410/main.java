@@ -10,6 +10,7 @@ import net.imagej.ImageJ;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
+import static ch.epfl.bio410.measurments.LocalMotionMeasurement.localMotionMeasurement;
 import static ch.epfl.bio410.measurments.MotionMeasurement.motionMeasurement;
 import static ch.epfl.bio410.segmentation.GetCentroid.getCentroid;
 import static ch.epfl.bio410.segmentation.LevelSetSegmentation.levelSetSegmentation;
@@ -41,12 +42,16 @@ public class main implements Command {
 		segmented.show();
 
 
-		PartitionedGraph centroid = getCentroid(segmented);
-		centroid.drawCentroid(imp,2);
+		PartitionedGraph centroids = getCentroid(segmented);
+		//centroid.drawCentroid(imp,2,1);
+
 
 		// Repliosome Detection
-		//PartitionedGraph trajectories = replisomeTracking(imp);
-		//motionMeasurement(imp, trajectories);
+		PartitionedGraph replisomes = replisomeTracking(imp);
+		motionMeasurement(imp, replisomes);
+
+
+		localMotionMeasurement(replisomes, centroids,imp);
 
 
 		/*
