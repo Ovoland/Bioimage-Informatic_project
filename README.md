@@ -4,7 +4,10 @@
 # Project SPB : Spot in bacteria
 
 ### Description
-
+This project had for objective to quantify the dynamic behavior of replisomes foci
+in a *Caulobacter crescentus* bacteria, notably by measuring the movement of each replisome
+to the referential of its bacterium. This would allow comparison between different
+colonies by using the quantitative data measured from the processed images.
 
 ### Plugin Installation
 
@@ -39,18 +42,16 @@ Please follow this procedure to obtain optimal image processing from this plugin
 1. Open your ImageJ distribution (example : Fiji)
 2. Select under Plugins -> BII -> Replisome_tracking
 3. Choose the TIFF file to be processed by entering the absolut path or clicking on the "Browse" button
-4. Choose between segmentation methods for the cells
-   1. Skeleton Segmentation : Uses thresholding and the extremities found by skeletonization to segment cells.
-   Good with separated, end-to-end touching, or horizontlly oriented groups of bacilli. 
-   Does not perform well with side-by side touching bacilli.
-   2. Level Sets Segmentation : Uses the Level Sets plugin (MUST BE INSTALLED SEPARATLY). to segment cells.
-   Good with separated & groups of multiple orientation bacilli, 
-   but less performant with side-by-side and end-to-end touching bacilli.
-5. Enter the following parameters :
-   1. Bacilli estimated maximum length **if using the Skeleton Segmentation method only**, otherwise, leave untouched.
-   2. Time interval between frames in seconds **for any chosen method**.
+4. Time interval between frames in seconds.
+5. If the image is pre-segmented, tick the case.
 6. Launch execution by clicking the "OK" button.
-7. 
+7. Choose between segmentation methods for the cells
+   1. Skeleton Segmentation : Uses thresholding and the extremities found by skeletonization to segment cells.
+      Good with separated, end-to-end touching, or horizontlly oriented groups of bacilli.
+      Does not perform well with side-by side touching bacilli.
+   2. Level Sets Segmentation : Uses the Level Sets plugin (MUST BE INSTALLED SEPARATLY). to segment cells.
+      Good with separated & groups of multiple orientation bacilli,
+      but less performant with side-by-side and end-to-end touching bacilli.
 
 ### Expected outputs
 
