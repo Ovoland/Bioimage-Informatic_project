@@ -22,4 +22,11 @@ public class Spot {
 	public double distance(Spot spot){
 		return Math.sqrt(Math.pow(this.x - spot.x, 2) + Math.pow(this.y - spot.y, 2));
 	}
+
+	public double distanceX(Spot spot){
+		return (this.x - spot.x);
+	}
+	public double distanceY(Spot spot){
+		return (this.y - spot.y);
+	}
 }
