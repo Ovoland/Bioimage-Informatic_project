@@ -10,6 +10,7 @@ import ij.ImagePlus;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.filter.MaximumFinder;
 import ij.process.ImageProcessor;
+import io.scif.jj2000.j2k.image.ImgDataAdapter;
 
 import java.awt.*;
 
@@ -20,9 +21,12 @@ public class ReplisomeTracking {
     private static final double lambda = 0.8; 	// Cost parameters, hyperparameter to balance cost function terms TODO : adapt it
 
 
-    public static PartitionedGraph replisomeTracking(ImagePlus imp){
+    public static PartitionedGraph replisomeTracking(ImagePlus inputImg){
+        ImagePlus imp = inputImg.duplicate();
         ImagePlus[] channels = ChannelSplitter.split(imp);
         ImagePlus replisome = channels[1];
+
+
 
         // Detection
         PartitionedGraph frames = detectReplisome(replisome, threshold, true);
@@ -34,7 +38,7 @@ public class ReplisomeTracking {
         // Linking trajectories
         PartitionedGraph trajectories = trackToNearestTrajectory(frames, cost);
 
-        trajectories.drawLines(imp);
+        trajectories.drawLines(replisome);
 
         return trajectories;
     }

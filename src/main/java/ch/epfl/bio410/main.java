@@ -9,6 +9,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
 import static ch.epfl.bio410.segmentation.LevelSetSegmentation.levelSetSegmentation;
+import static ch.epfl.bio410.tracking.ReplisomeTracking.replisomeTracking;
 
 
 /**
@@ -26,11 +27,12 @@ public class main implements Command {
 
 
 		//Segment the bacteria using Level Set segmentation
-		ImagePlus segmented =  levelSetSegmentation(imp);
+		//ImagePlus segmented =  levelSetSegmentation(imp);
+		//segmented.show();
 
 		// Repliosome Detection
-		//PartitionedGraph trajectories = replisomeTracking(imp.duplicate());
-		//motionMeasurement(imp.duplicate(), trajectories);
+		PartitionedGraph trajectories = replisomeTracking(imp);
+		//motionMeasurement(imp, trajectories);
 
 
 		/*

@@ -1,8 +1,7 @@
-package ch.epfl.bio410;
+package ch.epfl.bio410.tracking;
 
 import ch.epfl.bio410.cost.AbstractCost;
 import ch.epfl.bio410.cost.DistanceAndIntensityCost;
-import ch.epfl.bio410.cost.SimpleDistanceCost;
 import ch.epfl.bio410.graph.PartitionedGraph;
 import ch.epfl.bio410.graph.Spot;
 import ch.epfl.bio410.graph.Spots;
@@ -15,7 +14,6 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 import ij.IJ;
 import ij.ImagePlus;
-import java.awt.*;
 
 
 /**
