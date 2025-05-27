@@ -25,10 +25,16 @@ public class main implements Command {
 		ImagePlus imp = IJ.openImage("data/Merged-2_light.tif");
 		imp.show();
 
+		String segmentationPath = "data/Segmented/Segmentation of bacteria.tif";
+		ImagePlus segmented;
+		boolean loadSegmentation = true;
+		if(loadSegmentation){
+			segmented = IJ.openImage(segmentationPath);
+		}else{
+			segmented =  levelSetSegmentation(imp);
+		}
 
-		//Segment the bacteria using Level Set segmentation
-		//ImagePlus segmented =  levelSetSegmentation(imp);
-		//segmented.show();
+		segmented.show();
 
 		// Repliosome Detection
 		PartitionedGraph trajectories = replisomeTracking(imp);

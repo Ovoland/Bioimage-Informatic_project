@@ -87,7 +87,7 @@ public class ReplisomeTracking {
     private static PartitionedGraph trackToNearestTrajectory(PartitionedGraph frames, AbstractCost cost) {
         PartitionedGraph trajectories = new PartitionedGraph();
         for (Spots frame : frames) {
-            for (Spot spot : frame) {
+            for (Spot spot : frame.values()) {
                 Spots trajectory = trajectories.getPartitionOf(spot);
                 if (trajectory == null) trajectory = trajectories.createPartition(spot);
                 if (spot.equals(trajectory.last())) {
@@ -100,7 +100,7 @@ public class ReplisomeTracking {
                         //Determine if the next spot is probably missing
                         boolean missingDot = true;
 
-                        for(Spot next : frames.get(t+1)) {
+                        for(Spot next : frames.get(t+1).values()) {
                             double dist = cost.evaluate(spot, next);
                             if(dist <= nearestValue && cost.validate(spot,next)){
                                 IJ.log("#" + trajectories.size() + " spot " + next + " with a cost:" + cost.evaluate(next, spot));

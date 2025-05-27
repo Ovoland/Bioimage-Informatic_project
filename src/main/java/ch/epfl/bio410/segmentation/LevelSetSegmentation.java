@@ -14,6 +14,8 @@ import ij.process.ImageConverter;
 
 import java.awt.*;
 
+import static com.sun.tools.corba.se.idl.toJavaPortable.Arguments.None;
+
 public class LevelSetSegmentation {
     public static ImagePlus levelSetSegmentation(ImagePlus imp){
         ImagePlus[] channels = ChannelSplitter.split(imp);
@@ -75,7 +77,6 @@ public class LevelSetSegmentation {
     private static void getROI(ImagePlus img){
         img.show();
 
-        IJ.run(img, "Make Binary", "background=Light calculate black");
         int stackSize = img.getStackSize();
         IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
         IJ.run(img, "Analyze Particles...", "display clear exclude overlay add composite stack");

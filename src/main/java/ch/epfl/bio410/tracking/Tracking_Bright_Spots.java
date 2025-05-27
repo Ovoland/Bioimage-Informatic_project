@@ -96,13 +96,13 @@ public class Tracking_Bright_Spots implements Command {
 	private PartitionedGraph trackToFirstValidTrajectory(PartitionedGraph frames, AbstractCost cost) {
 		PartitionedGraph trajectories = new PartitionedGraph();
 		for (Spots frame : frames) {
-			for (Spot spot : frame) {
+			for (Spot spot : frame.values()) {
 				Spots trajectory = trajectories.getPartitionOf(spot);
 				if (trajectory == null) trajectory = trajectories.createPartition(spot);
 				if (spot.equals(trajectory.last())) {
 					int t0 = spot.t;
 					for (int t=t0; t < frames.size() - 1; t++) {
-						for(Spot next : frames.get(t+1)) {
+						for(Spot next : frames.get(t+1).values()) {
 							if (cost.validate(next, spot)) {
 								IJ.log("#" + trajectories.size() + " spot " + next + " with a cost:" + cost.evaluate(next, spot));
 								spot = next;
@@ -129,7 +129,7 @@ public class Tracking_Bright_Spots implements Command {
 	private PartitionedGraph trackToNearestTrajectory(PartitionedGraph frames, AbstractCost cost) {
 		PartitionedGraph trajectories = new PartitionedGraph();
 		for (Spots frame : frames) {
-			for (Spot spot : frame) {
+			for (Spot spot : frame.values()) {
 				Spots trajectory = trajectories.getPartitionOf(spot);
 				if (trajectory == null) trajectory = trajectories.createPartition(spot);
 				if (spot.equals(trajectory.last())) {
@@ -144,7 +144,7 @@ public class Tracking_Bright_Spots implements Command {
 						//Determine if the next spot is probably missing
 						boolean missingDot = true;
 
-						for(Spot next : frames.get(t+1)) {
+						for(Spot next : frames.get(t+1).values()) {
 							double dist = cost.evaluate(spot, next);
 							if(dist <= nearestValue && cost.validate(spot,next)){
 								IJ.log("#" + trajectories.size() + " spot " + next + " with a cost:" + cost.evaluate(next, spot));
@@ -263,8 +263,8 @@ public class Tracking_Bright_Spots implements Command {
 			 */
 			for(Spots nextTrajectory: input){
 				if(trajectory != nextTrajectory){
-					for (Spot spot : trajectory) {
-						for (Spot nextSpot : nextTrajectory) {
+					for (Spot spot : trajectory.values()) {
+						for (Spot nextSpot : nextTrajectory.values()) {
 							//Find at least one spot of another trajectory that is close enough
 							if (spot.distance(nextSpot) < proximityDivision) {
 								//Set similar color for close trajectories

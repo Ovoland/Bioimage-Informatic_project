@@ -6,6 +6,8 @@ import ij.gui.OvalRoi;
 import ij.gui.Overlay;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -16,7 +18,7 @@ public class PartitionedGraph extends ArrayList<Spots> {
 
     public Spots getPartitionOf(Spot spot) {
         for (Spots spots : this) {
-            for (Spot test : spots) {
+            for (Spot test : spots.values()) {
                 if (spot.equals(test))
                     return spots;
             }
@@ -36,7 +38,7 @@ public class PartitionedGraph extends ArrayList<Spots> {
         if (overlay == null) overlay = new Overlay();
         int radius = 5;
         for(Spots spots : this) {
-            for(Spot spot : spots) {
+            for(Spot spot : spots.values()) {
                 double xp = spot.x + 0.5 - radius;
                 double yp = spot.y + 0.5 - radius;
                 OvalRoi roi = new OvalRoi(xp, yp, 2 * radius, 2 * radius);
@@ -61,10 +63,10 @@ public class PartitionedGraph extends ArrayList<Spots> {
         int radius = 3;
         for (Spots spots : this) {
             if (spots.isEmpty()) break;
-
-            for (int i = 1; i < spots.size(); i++) {
-                Spot spot = spots.get(i);
-                Spot prev = spots.get(i - 1);
+            List<Integer> keyList = new ArrayList<>(spots.keySet());
+            for (int i =1; i < keyList.size(); ++i) {
+                Spot spot = spots.get(keyList.get(i));
+                Spot prev = spots.get(keyList.get(i - 1));
                 Line line = new Line(prev.x + 0.5, prev.y + 0.5, spot.x + 0.5, spot.y + 0.5);
                 line.setStrokeColor(spots.color);
                 line.setStrokeWidth(2);
