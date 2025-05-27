@@ -24,6 +24,7 @@ public class main implements Command {
 
 	private String[] methods = {"Skeleton Segmentation", "Omnipose Segmentation", "Simple Thresholding"};
 	private double bactLength = 18;
+	private double deltaT = 120;
 
 	@Override
 	public void run() {
@@ -38,13 +39,13 @@ public class main implements Command {
 		gui.addMessage("**The Skeleton Segmentation is an approximated method**");
 		gui.addMessage("**Only use the Simple Thresholding method if the bacterias are spaced out enough**");
 		gui.addNumericField("Bacterial maximum length in pixel (if using Skeleton method)", bactLength);
+		gui.addNumericField("Time interval between frames in seconds)", deltaT);
 		gui.showDialog();
 
 		String filePath = gui.getNextString();
 		String method = gui.getNextChoice();
-		if (method.equals(methods[0])){
-			bactLength = gui.getNextNumber();
-		}
+		bactLength = gui.getNextNumber();
+		deltaT = gui.getNextNumber();
 
 
 		//Open the image based on the path given by the GUI
@@ -54,7 +55,7 @@ public class main implements Command {
 
 		// Repliosome Detection
 		PartitionedGraph trajectories = trackReplisome(imp.duplicate());
-		measureMotion(imp.duplicate(), trajectories);
+		measureMotion(imp.duplicate(), trajectories, deltaT);
 
 
 		/*
