@@ -35,11 +35,9 @@ public class main implements Command {
 		String defaultPath = "C:"+ File.separator+"Users";
 		gui.addFileField("Choose File",defaultPath);
 
-		gui.addChoice("Choose method of tracking",methods,methods[0]);
-		gui.addMessage("**The Skeleton Segmentation is an approximated method**");
-		gui.addMessage("**Only use the Simple Thresholding method if the bacterias are spaced out enough**");
+		gui.addChoice("Choose method of tracking (see README.md)",methods,methods[0]);
 		gui.addNumericField("Bacterial maximum length in pixel (if using Skeleton method)", bactLength);
-		gui.addNumericField("Time interval between frames in seconds)", deltaT);
+		gui.addNumericField("Time interval between frames (in seconds)", deltaT);
 		gui.showDialog();
 
 		String filePath = gui.getNextString();
