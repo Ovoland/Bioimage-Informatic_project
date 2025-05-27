@@ -1,13 +1,14 @@
 package ch.epfl.bio410.graph;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Overlay;
+import ij.plugin.ChannelSplitter;
+import ij.process.ImageConverter;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -18,7 +19,7 @@ public class PartitionedGraph extends ArrayList<Spots> {
 
     public Spots getPartitionOf(Spot spot) {
         for (Spots spots : this) {
-            for (Spot test : spots.values()) {
+            for (Spot test : spots) {
                 if (spot.equals(test))
                     return spots;
             }
@@ -33,12 +34,11 @@ public class PartitionedGraph extends ArrayList<Spots> {
         return spots;
     }
 
-    public Overlay drawSpots(ImagePlus imp) {
+    public Overlay drawSpots(ImagePlus imp, int radius) {
         Overlay overlay = imp.getOverlay();
         if (overlay == null) overlay = new Overlay();
-        int radius = 5;
         for(Spots spots : this) {
-            for(Spot spot : spots.values()) {
+            for(Spot spot : spots) {
                 double xp = spot.x + 0.5 - radius;
                 double yp = spot.y + 0.5 - radius;
                 OvalRoi roi = new OvalRoi(xp, yp, 2 * radius, 2 * radius);
@@ -63,10 +63,10 @@ public class PartitionedGraph extends ArrayList<Spots> {
         int radius = 3;
         for (Spots spots : this) {
             if (spots.isEmpty()) break;
-            List<Integer> keyList = new ArrayList<>(spots.keySet());
-            for (int i =1; i < keyList.size(); ++i) {
-                Spot spot = spots.get(keyList.get(i));
-                Spot prev = spots.get(keyList.get(i - 1));
+
+            for (int i = 1; i < spots.size(); i++) {
+                Spot spot = spots.get(i);
+                Spot prev = spots.get(i - 1);
                 Line line = new Line(prev.x + 0.5, prev.y + 0.5, spot.x + 0.5, spot.y + 0.5);
                 line.setStrokeColor(spots.color);
                 line.setStrokeWidth(2);
@@ -93,5 +93,13 @@ public class PartitionedGraph extends ArrayList<Spots> {
         return overlay;
     }
 
-}
+    public void drawCentroid(ImagePlus InputImg, int radius) {
+        ImagePlus imp = InputImg.duplicate();
+        ImagePlus[] channels = ChannelSplitter.split(imp);
+        ImagePlus bacteria = channels[0];
+        ImageConverter.setDoScaling(true);
+        IJ.run(imp, "8-bit", "");
+        this.drawSpots(bacteria,radius);
+    }
 
+}

@@ -67,7 +67,7 @@ public class Tracking_Bright_Spots implements Command {
 
 		// Detection
 		PartitionedGraph frames = detect(imp, sigma, threshold);
-		frames.drawSpots(imp);
+		frames.drawSpots(imp,5);
 
 		// Create cost function TODO questions 2 & 5 - select one of cost function
 		//AbstractCost cost = new SimpleDistanceCost(distmax);
@@ -96,13 +96,13 @@ public class Tracking_Bright_Spots implements Command {
 	private PartitionedGraph trackToFirstValidTrajectory(PartitionedGraph frames, AbstractCost cost) {
 		PartitionedGraph trajectories = new PartitionedGraph();
 		for (Spots frame : frames) {
-			for (Spot spot : frame.values()) {
+			for (Spot spot : frame) {
 				Spots trajectory = trajectories.getPartitionOf(spot);
 				if (trajectory == null) trajectory = trajectories.createPartition(spot);
 				if (spot.equals(trajectory.last())) {
 					int t0 = spot.t;
 					for (int t=t0; t < frames.size() - 1; t++) {
-						for(Spot next : frames.get(t+1).values()) {
+						for(Spot next : frames.get(t+1)) {
 							if (cost.validate(next, spot)) {
 								IJ.log("#" + trajectories.size() + " spot " + next + " with a cost:" + cost.evaluate(next, spot));
 								spot = next;
@@ -129,7 +129,7 @@ public class Tracking_Bright_Spots implements Command {
 	private PartitionedGraph trackToNearestTrajectory(PartitionedGraph frames, AbstractCost cost) {
 		PartitionedGraph trajectories = new PartitionedGraph();
 		for (Spots frame : frames) {
-			for (Spot spot : frame.values()) {
+			for (Spot spot : frame) {
 				Spots trajectory = trajectories.getPartitionOf(spot);
 				if (trajectory == null) trajectory = trajectories.createPartition(spot);
 				if (spot.equals(trajectory.last())) {
@@ -144,7 +144,7 @@ public class Tracking_Bright_Spots implements Command {
 						//Determine if the next spot is probably missing
 						boolean missingDot = true;
 
-						for(Spot next : frames.get(t+1).values()) {
+						for(Spot next : frames.get(t+1)) {
 							double dist = cost.evaluate(spot, next);
 							if(dist <= nearestValue && cost.validate(spot,next)){
 								IJ.log("#" + trajectories.size() + " spot " + next + " with a cost:" + cost.evaluate(next, spot));
@@ -239,7 +239,7 @@ public class Tracking_Bright_Spots implements Command {
 					for (int k = -1; k <= 1; k++)
 						for (int l = -1; l <= 1; l++)
 							max = Math.max(max, dog.getPixelValue(x + k, y + l));
-				 	if (v == max) spots.add(new Spot(x, y, t, valueImage));
+					if (v == max) spots.add(new Spot(x, y, t, valueImage));
 				}
 			}
 		}
@@ -263,8 +263,8 @@ public class Tracking_Bright_Spots implements Command {
 			 */
 			for(Spots nextTrajectory: input){
 				if(trajectory != nextTrajectory){
-					for (Spot spot : trajectory.values()) {
-						for (Spot nextSpot : nextTrajectory.values()) {
+					for (Spot spot : trajectory) {
+						for (Spot nextSpot : nextTrajectory) {
 							//Find at least one spot of another trajectory that is close enough
 							if (spot.distance(nextSpot) < proximityDivision) {
 								//Set similar color for close trajectories
