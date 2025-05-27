@@ -1,6 +1,8 @@
 package ch.epfl.bio410.segmentation;
 
-import ch.epfl.bio410.bacteria.Bacteria;
+import ch.epfl.bio410.graph.PartitionedGraph;
+import ch.epfl.bio410.graph.Spot;
+import ch.epfl.bio410.graph.Spots;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -13,12 +15,17 @@ import ij.plugin.frame.RoiManager;
 import ij.process.ImageConverter;
 
 import java.awt.*;
+import java.util.Arrays;
+
+import static com.sun.tools.corba.se.idl.toJavaPortable.Arguments.None;
 
 public class LevelSetSegmentation {
-    public static ImagePlus levelSetSegmentation(ImagePlus imp){
+    public static ImagePlus levelSetSegmentation(ImagePlus InputImg){
+        ImagePlus imp = InputImg.duplicate();
         ImagePlus[] channels = ChannelSplitter.split(imp);
         ImagePlus bacteria = channels[0];
-        return segmentation(bacteria);
+        ImagePlus segmented = segmentation(bacteria);
+        return segmented;
     }
 
 
@@ -32,7 +39,7 @@ public class LevelSetSegmentation {
         ImageStack processedStack = new ImageStack(imp.getWidth(), imp.getHeight());
 
         int NFrames = imp.getNFrames();
-        for(int i = 1; i < NFrames; i++){
+        for(int i = 1; i <= NFrames; i++){
             imp.setSlice(i);
             ImagePlus frame = new Duplicator().run(imp, 1,1,1,1,i,i);
             frame.show();
@@ -72,46 +79,6 @@ public class LevelSetSegmentation {
     }
 
 
-    private static void getROI(ImagePlus img){
-        img.show();
 
-        IJ.run(img, "Make Binary", "background=Light calculate black");
-        int stackSize = img.getStackSize();
-        IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
-        IJ.run(img, "Analyze Particles...", "display clear exclude overlay add composite stack");
-
-        //get ROI manager
-        RoiManager rm = RoiManager.getRoiManager();
-
-        // get the open ResultsTable
-        ResultsTable rt = ResultsTable.getResultsTable();
-
-        //get the coordinate of the centroid
-        double[] xCentroid = rt.getColumn("XM");
-        double[] yCentroid = rt.getColumn("YM");
-
-        //Get all the information of the bounding boxes
-        double[] bx = rt.getColumn("BX");
-        double[] by = rt.getColumn("BY");
-        double[] width = rt.getColumn("Width");
-        double[] height = rt.getColumn("Height");
-
-
-        //Make the extraction frame by frame
-        Bacteria[][] candidates ;
-        for(int iParticule= 0; iParticule < rt.size(); ++iParticule){
-            Bacteria bacteria = new Bacteria(xCentroid[iParticule],yCentroid[iParticule],bx[iParticule],by[iParticule],width[iParticule],height[iParticule]);
-            //candidates[rt.getValue("Slice",iParticule)].pushBack(bacteria);
-        }
-        Roi[] roi = rm.getRoisAsArray();
-        for (Roi r : roi) {
-            rm.addRoi(r);
-        }
-        img.show();
-
-
-
-
-    }
 
 }

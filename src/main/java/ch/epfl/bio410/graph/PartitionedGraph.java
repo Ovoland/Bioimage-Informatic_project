@@ -1,9 +1,12 @@
 package ch.epfl.bio410.graph;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Overlay;
+import ij.plugin.ChannelSplitter;
+import ij.process.ImageConverter;
 
 import java.util.ArrayList;
 
@@ -31,10 +34,9 @@ public class PartitionedGraph extends ArrayList<Spots> {
         return spots;
     }
 
-    public Overlay drawSpots(ImagePlus imp) {
+    public Overlay drawSpots(ImagePlus imp, int radius) {
         Overlay overlay = imp.getOverlay();
         if (overlay == null) overlay = new Overlay();
-        int radius = 5;
         for(Spots spots : this) {
             for(Spot spot : spots) {
                 double xp = spot.x + 0.5 - radius;
@@ -91,5 +93,13 @@ public class PartitionedGraph extends ArrayList<Spots> {
         return overlay;
     }
 
-}
+    public void drawCentroid(ImagePlus InputImg, int radius) {
+        ImagePlus imp = InputImg.duplicate();
+        ImagePlus[] channels = ChannelSplitter.split(imp);
+        ImagePlus bacteria = channels[0];
+        ImageConverter.setDoScaling(true);
+        IJ.run(imp, "8-bit", "");
+        this.drawSpots(bacteria,radius);
+    }
 
+}

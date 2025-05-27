@@ -67,7 +67,7 @@ public class Tracking_Bright_Spots implements Command {
 
 		// Detection
 		PartitionedGraph frames = detect(imp, sigma, threshold);
-		frames.drawSpots(imp);
+		frames.drawSpots(imp,5);
 
 		// Create cost function TODO questions 2 & 5 - select one of cost function
 		//AbstractCost cost = new SimpleDistanceCost(distmax);
@@ -239,7 +239,7 @@ public class Tracking_Bright_Spots implements Command {
 					for (int k = -1; k <= 1; k++)
 						for (int l = -1; l <= 1; l++)
 							max = Math.max(max, dog.getPixelValue(x + k, y + l));
-				 	if (v == max) spots.add(new Spot(x, y, t, valueImage));
+					if (v == max) spots.add(new Spot(x, y, t, valueImage));
 				}
 			}
 		}

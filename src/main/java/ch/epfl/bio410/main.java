@@ -4,10 +4,14 @@ import ch.epfl.bio410.graph.PartitionedGraph;
 import ch.epfl.bio410.segmentation.segmentBacteriaTrad;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.plugin.ChannelSplitter;
+import ij.process.ImageConverter;
 import net.imagej.ImageJ;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
+import static ch.epfl.bio410.measurments.MotionMeasurement.motionMeasurement;
+import static ch.epfl.bio410.segmentation.GetCentroid.getCentroid;
 import static ch.epfl.bio410.segmentation.LevelSetSegmentation.levelSetSegmentation;
 import static ch.epfl.bio410.tracking.ReplisomeTracking.replisomeTracking;
 
@@ -25,13 +29,23 @@ public class main implements Command {
 		ImagePlus imp = IJ.openImage("data/Merged-2_light.tif");
 		imp.show();
 
+		String segmentationPath = "data/Segmented/segmented_light.tif";
+		ImagePlus segmented;
+		boolean loadSegmentation = true;
+		if(loadSegmentation){
+			segmented = IJ.openImage(segmentationPath);
+		}else{
+			segmented =  levelSetSegmentation(imp);
+		}
 
-		//Segment the bacteria using Level Set segmentation
-		//ImagePlus segmented =  levelSetSegmentation(imp);
-		//segmented.show();
+		segmented.show();
+
+
+		PartitionedGraph centroid = getCentroid(segmented);
+		centroid.drawCentroid(imp,2);
 
 		// Repliosome Detection
-		PartitionedGraph trajectories = replisomeTracking(imp);
+		//PartitionedGraph trajectories = replisomeTracking(imp);
 		//motionMeasurement(imp, trajectories);
 
 

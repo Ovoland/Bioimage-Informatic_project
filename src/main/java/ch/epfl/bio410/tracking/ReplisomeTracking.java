@@ -5,6 +5,7 @@ import ch.epfl.bio410.cost.DistanceAndIntensityCost;
 import ch.epfl.bio410.graph.PartitionedGraph;
 import ch.epfl.bio410.graph.Spot;
 import ch.epfl.bio410.graph.Spots;
+import ch.epfl.bio410.graph.Trajectories;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.plugin.ChannelSplitter;
@@ -30,7 +31,7 @@ public class ReplisomeTracking {
 
         // Detection
         PartitionedGraph frames = detectReplisome(replisome, threshold, true);
-        frames.drawSpots(replisome);
+        frames.drawSpots(replisome, 5);
 
         // Create cost function
         AbstractCost cost = new DistanceAndIntensityCost(imp, costmax, lambda);
@@ -70,7 +71,7 @@ public class ReplisomeTracking {
             }
             graph.add(spots);
         }
-        graph.drawSpots(imp);
+        graph.drawSpots(imp, 5);
 
         return graph;
     }
@@ -122,6 +123,4 @@ public class ReplisomeTracking {
         }
         return trajectories;
     }
-
-
 }

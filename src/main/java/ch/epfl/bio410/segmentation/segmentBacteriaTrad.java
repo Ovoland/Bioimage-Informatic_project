@@ -1,6 +1,5 @@
 package ch.epfl.bio410.segmentation;
 
-import ch.epfl.bio410.bacteria.Bacteria;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
@@ -18,7 +17,7 @@ public class segmentBacteriaTrad {
     }
 
 
-    private static void getROI(ImagePlus img){
+    private static void getROI(ImagePlus img) {
         ImagePlus impThresholded = img.duplicate();
         impThresholded.show();
 
@@ -48,22 +47,6 @@ public class segmentBacteriaTrad {
         double[] by = rt.getColumn("BY");
         double[] width = rt.getColumn("Width");
         double[] height = rt.getColumn("Height");
-
-
-        //Make the extraction frame by frame
-        Bacteria[][] candidates ;
-        for(int iParticule= 0; iParticule < rt.size(); ++iParticule){
-            Bacteria bacteria = new Bacteria(xCentroid[iParticule],yCentroid[iParticule],bx[iParticule],by[iParticule],width[iParticule],height[iParticule]);
-            //candidates[rt.getValue("Slice",iParticule)].pushBack(bacteria);
-        }
-        Roi[] roi = rm.getRoisAsArray();
-        for (Roi r : roi) {
-            rm.addRoi(r);
-        }
-        img.show();
-
-
-
 
     }
 
