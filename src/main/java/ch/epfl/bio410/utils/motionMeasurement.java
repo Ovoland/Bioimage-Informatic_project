@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 public class motionMeasurement {
     public static void measureMotion(ImagePlus img, PartitionedGraph trajectories){
         double[] distances = computeTraveledDistance(trajectories);
-        plotMotion(distances);
+        plotDistances(distances);
         double[] velocities = computeVelocity(distances, trajectories);
         plotMotion(velocities);
         //annotateImage(img, distances, trajectories);
@@ -53,7 +53,7 @@ public class motionMeasurement {
     }
 
     private static void plotDistances(double[] distances){
-        Plot plot = new Plot("Results", "ROI", "Mean");
+        Plot plot = new Plot("Distance results", "Replisome Index", "Displacement");
         plot.setLimits(-1, distances.length,0,600);
         double[] trajectoriesRange = new double[distances.length];
         for(int i = 0; i < distances.length; ++i){
@@ -72,14 +72,14 @@ public class motionMeasurement {
     }
 
     private static void plotMotion(double[] motion){
-        Plot plot = new Plot("Results", "ROI", "Mean");
-        plot.setLimits(-1, motion.length,-5, Arrays.stream(motion).max().getAsDouble() + 5);
+        Plot plot2 = new Plot("Speed results", "Replisome Index", "Speed");
+        plot2.setLimits(-1, motion.length,-5, Arrays.stream(motion).max().getAsDouble() + 5);
         double[] trajectoriesRange = new double[motion.length];
         for(int i = 0; i < motion.length; ++i){
             trajectoriesRange[i] = i;
         }
-        plot.addPoints(trajectoriesRange, motion,3);
-        plot.show();
+        plot2.addPoints(trajectoriesRange, motion,3);
+        plot2.show();
     }
 
     private static void annotateImage(ImagePlus img, double[] distances,PartitionedGraph trajectories ){

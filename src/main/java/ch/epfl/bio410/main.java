@@ -37,7 +37,7 @@ public class main implements Command {
 		gui.addChoice("Choose method of tracking",methods,methods[0]);
 		gui.addMessage("**The Skeleton Segmentation is an approximated method**");
 		gui.addMessage("**Only use the Simple Thresholding method if the bacterias are spaced out enough**");
-		gui.addNumericField("Bacterial maximum lenght in pixel (if using Skeleton method)", bactLength);
+		gui.addNumericField("Bacterial maximum length in pixel (if using Skeleton method)", bactLength);
 		gui.showDialog();
 
 		String filePath = gui.getNextString();
@@ -67,7 +67,7 @@ public class main implements Command {
 			segmentBacteria.BacteriaSegmentation(imp);
 		}
 		*/
-		segmentBacteriaTrad.BacteriaSegmentation(imp, bactLength);
+		//segmentBacteriaTrad.BacteriaSegmentation(imp, bactLength);
 	}
 
 
