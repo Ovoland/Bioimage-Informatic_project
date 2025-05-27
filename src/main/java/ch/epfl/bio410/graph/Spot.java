@@ -26,4 +26,11 @@ public class Spot {
 	public double distanceU(Spot spot, double pixelWidth, double pixelHeight){
 		return Math.sqrt(Math.pow((this.x - spot.x)*pixelWidth, 2) + Math.pow((this.y - spot.y)*pixelHeight, 2));
 	}
+
+	public double distanceX(Spot spot){
+		return (this.x - spot.x);
+	}
+	public double distanceY(Spot spot){
+		return (this.y - spot.y);
+	}
 }

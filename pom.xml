@@ -144,14 +144,8 @@
             <artifactId>imagej-legacy</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.imagej</groupId>
-            <artifactId>imagej</artifactId>
-            <version>2.14.0</version>
-        </dependency>
-        <dependency>
-            <groupId>net.imagej</groupId>
-            <artifactId>ij</artifactId>
-            <version>1.54f</version>
+            <groupId>sc.fiji</groupId>
+            <artifactId>level_sets</artifactId>
         </dependency>
     </dependencies>
 </project>
