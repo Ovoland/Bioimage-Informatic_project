@@ -11,7 +11,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
 import static ch.epfl.bio410.measurments.LocalMotionMeasurement.localMotionMeasurement;
-import static ch.epfl.bio410.measurments.MotionMeasurement.motionMeasurement;
+import static ch.epfl.bio410.measurments.MotionMeasurement.motionMeasurment;
 import static ch.epfl.bio410.segmentation.GetCentroid.getCentroid;
 import static ch.epfl.bio410.segmentation.LevelSetSegmentation.levelSetSegmentation;
 import static ch.epfl.bio410.tracking.ReplisomeTracking.replisomeTracking;
@@ -26,7 +26,25 @@ public class main implements Command {
 
 	@Override
 	public void run() {
+
+		/*
+		//GUI
+		GenericDialog gui = new GenericDialog("Tracking Bright Spots");
+
+		String defaultPath = "C:"+ File.separator+"Users";
+		gui.addFileField("Choose File",defaultPath);
+
+		gui.addChoice("Choose method of tracking",methods,methods[0]);
+		gui.addMessage("**The Skeleton Segmentation is an approximated method");
+		gui.addMessage("**Only use the Simple Thresholding method if the bacterias are spaced out enough**");
+		gui.showDialog();
+
+		String filePath = gui.getNextString();
+		String method = gui.getNextChoice();
+		 */
+
 		//Open the image based on the path given by the GUI
+		//ImagePlus imp = IJ.getImage(filePath);
 		ImagePlus imp = IJ.openImage("data/Merged-2_light.tif");
 		imp.show();
 
@@ -48,7 +66,7 @@ public class main implements Command {
 
 		// Repliosome Detection
 		PartitionedGraph replisomes = replisomeTracking(imp);
-		motionMeasurement(imp, replisomes);
+		motionMeasurment(imp, replisomes,120);
 
 
 		localMotionMeasurement(replisomes, centroids,imp);

@@ -4,29 +4,37 @@ import ch.epfl.bio410.graph.PartitionedGraph;
 import ch.epfl.bio410.graph.Spot;
 import ch.epfl.bio410.graph.Spots;
 import ij.ImagePlus;
+import ij.measure.Calibration;
 import ij.plugin.ChannelSplitter;
 
 import static ch.epfl.bio410.measurments.MotionMeasurement.plotMotion;
 
+
 public class LocalMotionMeasurement {
 
     public static void localMotionMeasurement(PartitionedGraph replisomes, PartitionedGraph bacterias, ImagePlus img) {
-        PartitionedGraph closestBacterias = findNearestBacteria(replisomes, bacterias);
-        double[] localMotion1 = computeLocalMotionUnit(replisomes.get(1), closestBacterias.get(1));
+        Calibration calImp = img.getCalibration();
+        double pixelWidth = calImp.pixelWidth;
+        double pixelHeight = calImp.pixelHeight;
+        String unit = calImp.getUnit();
+
+        PartitionedGraph closestBacterias = findNearestBacteria(replisomes, bacterias,pixelWidth, pixelHeight);
 
         replisomes.addAll(closestBacterias);
         replisomes.drawSpots(img,2,1);
 
         int[] idxReplisomeToShow = {1,10,40,80,100,120};
         for(int idx : idxReplisomeToShow) {
-            double[] localMotionUnit = computeLocalMotionUnit(replisomes.get(idx), closestBacterias.get(idx));
-            plotMotion(localMotionUnit,"Temporal evolation of local distance for replisome " + idx, "Time", "Local distance");
+            double[] localMotionUnit = computeLocalMotionUnit(replisomes.get(idx), closestBacterias.get(idx),pixelWidth, pixelHeight);
+            String[] labelsMotion = {"Temporal evolation of local distance for replisome " + idx, "Time", "Local displacement(" + unit + "/s)"};
+
+            plotMotion(localMotionUnit,labelsMotion);
 
         }
     }
 
 
-    private static PartitionedGraph findNearestBacteria(PartitionedGraph replisomes, PartitionedGraph bacterias) {
+    private static PartitionedGraph findNearestBacteria(PartitionedGraph replisomes, PartitionedGraph bacterias, double pixelWidth, double pixelHeight) {
         int Nreplisome = replisomes.size();
 
         //Vector that will store for each replisome the coordinates of the closest bacteria at each frame
@@ -51,7 +59,7 @@ public class LocalMotionMeasurement {
                 //Among these bacteria determine which one is the closest to the replisome spot
                 for (int bactIdx = 0; bactIdx < bacteriaCandidates.size(); ++bactIdx) {
                     Spot bacteriaSpot = bacteriaCandidates.get(bactIdx);
-                    double distance = replisomeSpot.distance(bacteriaSpot);
+                    double distance = replisomeSpot.distanceMicroMeter(bacteriaSpot,pixelWidth, pixelHeight);
                     //Determine if this is the closest bacteria
                     //Also verify if the bacteria is at a valide distance
                     if (distance < minDistance) {
@@ -70,7 +78,7 @@ public class LocalMotionMeasurement {
 
     }
 
-    private static double[] computeLocalMotionUnit(Spots replisome, Spots closestBacteria) {
+    private static double[] computeLocalMotionUnit(Spots replisome, Spots closestBacteria,double pixelWidth, double pixelHeight) {
         int Nspots = replisome.size();
         double[] localMotionUnit = new double[Nspots];
 
@@ -79,7 +87,7 @@ public class LocalMotionMeasurement {
             Spot closestBacteriaSpot = closestBacteria.get(spotIdx);
 
             //Compute the local motion unit as the distance between the replisome and the closest bacteria
-            double distance = replisomeSpot.distance(closestBacteriaSpot);
+            double distance = replisomeSpot.distanceMicroMeter(closestBacteriaSpot, pixelWidth, pixelHeight);
             //If the centrosome found is considered too far, we keep the previous value
             if(distance > 400){
                 if(spotIdx == 0) {

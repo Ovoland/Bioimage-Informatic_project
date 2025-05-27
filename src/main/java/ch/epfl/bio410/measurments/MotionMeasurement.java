@@ -7,21 +7,28 @@ import ch.epfl.bio410.graph.Spot;
 import ch.epfl.bio410.graph.Spots;
 import ij.ImagePlus;
 import ij.gui.Plot;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 
 import java.awt.*;
 import java.util.Arrays;
 
 public class MotionMeasurement {
-    public static void motionMeasurement(ImagePlus img, PartitionedGraph trajectories){
-        double[] distances = computeTraveledDistance(trajectories);
-        plotMotion(distances,"Total distance travelled by replisome", "replisome", "Total distance");
-        double[] velocities = computeVelocity(distances, trajectories);
-        plotMotion(velocities, "Mean velocity per replisome", "replisome", "Mean Velocity");
-        //annotateImage(img, distances, trajectories);
+    public static void motionMeasurment(ImagePlus img, PartitionedGraph trajectories, double deltaT) {
+        Calibration calImp = img.getCalibration();
+        double pixelWidth = calImp.pixelWidth;
+        double pixelHeight = calImp.pixelHeight;
+        String unit = calImp.getUnit();
+
+        double[] distances = computeTraveledDistance(trajectories, pixelWidth, pixelHeight);
+        String[] labelsDistances = {"Total distance travelled by replisome", "Replisome Index", "Total displacement (" + unit + ")"};
+        plotMotion(distances, labelsDistances);
+        double[] velocities = computeVelocity(distances, trajectories, deltaT);
+        String[] labelsMotion = {"Mean velocity per replisome", "Replisome Index", "Speed (" + unit + "/s)"};
+        plotMotion(velocities, labelsMotion);
     }
 
-    private static double[] computeTraveledDistance(PartitionedGraph trajectories){
+    private static double[] computeTraveledDistance(PartitionedGraph trajectories, double pixelWidth, double pixelHeight){
         double[] distances = new double[trajectories.size()];
         for(int i =0; i< trajectories.size(); ++i){
             Spots trajectory = trajectories.get(i);
@@ -30,7 +37,7 @@ public class MotionMeasurement {
                 assert(j+1 <= trajectory.size());
                 Spot nextSpot = trajectory.get(j+1);
 
-                double distance = spot.distance(nextSpot);
+                double distance = spot.distanceMicroMeter(nextSpot, pixelWidth, pixelHeight);
                 //System.out.println("adding at index " + i  + "distance " + distance);
                 distances[i] += distance;
 
@@ -50,8 +57,8 @@ public class MotionMeasurement {
     }
 
     private static void plotDistances(double[] distances){
-        Plot plot = new Plot("Results", "ROI", "Mean");
-        plot.setLimits(-1, distances.length,0,600);
+        Plot plot = new Plot("Distance results", "Replisome Index", "Displacement");
+        plot.setLimits(-1, distances.length,-5,Arrays.stream(distances).max().getAsDouble());
         double[] trajectoriesRange = new double[distances.length];
         for(int i = 0; i < distances.length; ++i){
             trajectoriesRange[i] = i;
@@ -60,17 +67,17 @@ public class MotionMeasurement {
         plot.show();
     }
 
-    private static double[] computeVelocity(double[] distances, PartitionedGraph trajectories){
+    private static double[] computeVelocity(double[] distances, PartitionedGraph trajectories, double deltaT){
         double[] velocities = new double[distances.length];
         for(int t = 0; t < distances.length; ++t){
-            velocities[t] = distances[t]/trajectories.get(t).size();
+            velocities[t] = distances[t]/(trajectories.get(t).size()*deltaT);
         }
         return velocities;
     }
 
-    public static void plotMotion(double[] motion, String title, String xLabel, String yLabel){
-        Plot plot = new Plot(title, xLabel, yLabel);
-        plot.setLimits(-1, motion.length,-5, Arrays.stream(motion).max().getAsDouble() + 5);
+    public static void plotMotion(double[] motion, String[] labels){
+        Plot plot = new Plot(labels[0], labels[1], labels[2]);
+        plot.setLimits(-1, motion.length,-0.01, Arrays.stream(motion).max().getAsDouble());
         double[] trajectoriesRange = new double[motion.length];
         for(int i = 0; i < motion.length; ++i){
             trajectoriesRange[i] = i;
