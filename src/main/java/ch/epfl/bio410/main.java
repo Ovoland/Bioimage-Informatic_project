@@ -1,7 +1,7 @@
 package ch.epfl.bio410;
 
 import ch.epfl.bio410.graph.PartitionedGraph;
-import ch.epfl.bio410.segmentation.segmentBacteriaTrad;
+import ch.epfl.bio410.ui.GUI;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.plugin.ChannelSplitter;
@@ -10,11 +10,15 @@ import net.imagej.ImageJ;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 
+import java.util.Objects;
+
 import static ch.epfl.bio410.measurments.LocalMotionMeasurement.localMotionMeasurement;
 import static ch.epfl.bio410.measurments.MotionMeasurement.motionMeasurment;
 import static ch.epfl.bio410.segmentation.GetCentroid.getCentroid;
 import static ch.epfl.bio410.segmentation.LevelSetSegmentation.levelSetSegmentation;
 import static ch.epfl.bio410.tracking.ReplisomeTracking.replisomeTracking;
+import static ch.epfl.bio410.ui.GUI.UserSelection;
+import static ch.epfl.bio410.ui.GUI.showGUI;
 
 
 /**
@@ -22,66 +26,45 @@ import static ch.epfl.bio410.tracking.ReplisomeTracking.replisomeTracking;
 @Plugin(type = Command.class, menuPath = "Plugins>BII>Replisome_tracking")
 public class main implements Command {
 
-	private String[] methods = {"Skeleton Segmentation", "Omnipose Segmentation", "Simple Thresholding"};
+	private String[] methods = {"Level Set", "Skeleton Segmentation"};
 
 	@Override
 	public void run() {
-
-		/*
-		//GUI
-		GenericDialog gui = new GenericDialog("Tracking Bright Spots");
-
-		String defaultPath = "C:"+ File.separator+"Users";
-		gui.addFileField("Choose File",defaultPath);
-
-		gui.addChoice("Choose method of tracking",methods,methods[0]);
-		gui.addMessage("**The Skeleton Segmentation is an approximated method");
-		gui.addMessage("**Only use the Simple Thresholding method if the bacterias are spaced out enough**");
-		gui.showDialog();
-
-		String filePath = gui.getNextString();
-		String method = gui.getNextChoice();
-		 */
-
+		GUI.UserSelection  = showGUI(methods);
 		//Open the image based on the path given by the GUI
 		//ImagePlus imp = IJ.getImage(filePath);
-		ImagePlus imp = IJ.openImage("data/Merged-2_light.tif");
+		ImagePlus imp = IJ.openImage(UserSelection.inputImagePath);
 		imp.show();
 
-		String segmentationPath = "data/Segmented/segmented_light.tif";
 		ImagePlus segmented;
-		boolean loadSegmentation = true;
-		if(loadSegmentation){
-			segmented = IJ.openImage(segmentationPath);
+		if(UserSelection.loadSegmentation){
+			segmented = IJ.openImage(UserSelection.segmentedPath);
 		}else{
-			segmented =  levelSetSegmentation(imp);
+			if(Objects.equals(UserSelection.method, methods[0])) {
+				// Level Set Segmentation
+				segmented = levelSetSegmentation(imp);
+			} else if(Objects.equals(UserSelection.method, methods[1])) {
+				// Skeleton Segmentation
+				IJ.run(imp, "Skeletonize (2D/3D)", "");
+				ImageConverter.setDoScaling(true);
+				segmented = imp;
+			} else {
+				IJ.error("Unknown segmentation method: " + UserSelection.method);
+				return;
+			}
 		}
 
 		segmented.show();
 
 
 		PartitionedGraph centroids = getCentroid(segmented);
-		//centroid.drawCentroid(imp,2,1);
 
-
-		// Repliosome Detection
+		// Replisome Detection
 		PartitionedGraph replisomes = replisomeTracking(imp);
-		motionMeasurment(imp, replisomes,120);
+		motionMeasurment(imp, replisomes, UserSelection.deltaT);
 
-
-		localMotionMeasurement(replisomes, centroids,imp);
-
-
-		/*
-		//Bacteria Segmentation
-		if (method.equals(methods[0])) {
-			segmentBacteriaTrad.BacteriaSegmentation(imp);
-		} else if (method.equals(methods[1])) {
-			//Omnipose
-		} else if (method.equals(methods[2])) {
-			LevelSetSegmentation.BacteriaSegmentation(imp);
-		}
-		*/
+		int[] replisomeToShow = {1};
+		localMotionMeasurement(replisomes, centroids,imp,replisomeToShow);
 	}
 
 

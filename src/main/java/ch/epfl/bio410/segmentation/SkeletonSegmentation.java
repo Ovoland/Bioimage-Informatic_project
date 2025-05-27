@@ -3,17 +3,13 @@ package ch.epfl.bio410.segmentation;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
-import ij.gui.Roi;
 import ij.measure.ResultsTable;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
 
-import java.awt.*;
-import java.util.Arrays;
-
-public class segmentBacteriaTrad {
-    public static void BacteriaSegmentation(ImagePlus img, double bactLength){
+public class SkeletonSegmentation {
+    public static void skeletonSegmentation(ImagePlus img, double bactLength){
         ImagePlus[] channels = ChannelSplitter.split(img);
         ImagePlus bacteria = channels[0];
         skeleton(bacteria, bactLength);
