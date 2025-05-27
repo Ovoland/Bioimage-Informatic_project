@@ -12,7 +12,7 @@ import static ch.epfl.bio410.measurments.MotionMeasurement.plotMotion;
 
 public class LocalMotionMeasurement {
 
-    public static void localMotionMeasurement(PartitionedGraph replisomes, PartitionedGraph bacterias, ImagePlus img) {
+    public static void localMotionMeasurement(PartitionedGraph replisomes, PartitionedGraph bacterias, ImagePlus img, int[] replisomeToShow) {
         Calibration calImp = img.getCalibration();
         double pixelWidth = calImp.pixelWidth;
         double pixelHeight = calImp.pixelHeight;
@@ -23,7 +23,7 @@ public class LocalMotionMeasurement {
         replisomes.addAll(closestBacterias);
         replisomes.drawSpots(img,2,1);
 
-        int[] idxReplisomeToShow = {1,10,40,80,100,120};
+        int[] idxReplisomeToShow = replisomeToShow;
         for(int idx : idxReplisomeToShow) {
             double[] localMotionUnit = computeLocalMotionUnit(replisomes.get(idx), closestBacterias.get(idx),pixelWidth, pixelHeight);
             String[] labelsMotion = {"Temporal evolation of local distance for replisome " + idx, "Time", "Local displacement(" + unit + "/s)"};
