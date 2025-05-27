@@ -34,7 +34,7 @@ public class PartitionedGraph extends ArrayList<Spots> {
         return spots;
     }
 
-    public Overlay drawSpots(ImagePlus imp, int radius) {
+    public Overlay drawSpots(ImagePlus imp, int radius, int width) {
         Overlay overlay = imp.getOverlay();
         if (overlay == null) overlay = new Overlay();
         for(Spots spots : this) {
@@ -44,7 +44,7 @@ public class PartitionedGraph extends ArrayList<Spots> {
                 OvalRoi roi = new OvalRoi(xp, yp, 2 * radius, 2 * radius);
                 roi.setPosition(spot.t + 1); // display roi in one frqme
                 roi.setStrokeColor(spots.color);
-                roi.setStrokeWidth(1);
+                roi.setStrokeWidth(width);
                 overlay.add(roi);
             }
         }
@@ -99,7 +99,7 @@ public class PartitionedGraph extends ArrayList<Spots> {
         ImagePlus bacteria = channels[0];
         ImageConverter.setDoScaling(true);
         IJ.run(imp, "8-bit", "");
-        this.drawSpots(bacteria,radius);
+        this.drawSpots(bacteria,radius,1);
     }
 
 }

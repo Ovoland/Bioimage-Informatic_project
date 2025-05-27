@@ -15,9 +15,9 @@ import java.util.Arrays;
 public class MotionMeasurement {
     public static void motionMeasurement(ImagePlus img, PartitionedGraph trajectories){
         double[] distances = computeTraveledDistance(trajectories);
-        plotMotion(distances);
+        plotMotion(distances,"Total distance travelled by replisome", "replisome", "Total distance");
         double[] velocities = computeVelocity(distances, trajectories);
-        plotMotion(velocities);
+        plotMotion(velocities, "Mean velocity per replisome", "replisome", "Mean Velocity");
         //annotateImage(img, distances, trajectories);
     }
 
@@ -68,8 +68,8 @@ public class MotionMeasurement {
         return velocities;
     }
 
-    private static void plotMotion(double[] motion){
-        Plot plot = new Plot("Results", "ROI", "Mean");
+    public static void plotMotion(double[] motion, String title, String xLabel, String yLabel){
+        Plot plot = new Plot(title, xLabel, yLabel);
         plot.setLimits(-1, motion.length,-5, Arrays.stream(motion).max().getAsDouble() + 5);
         double[] trajectoriesRange = new double[motion.length];
         for(int i = 0; i < motion.length; ++i){

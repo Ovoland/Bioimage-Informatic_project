@@ -31,7 +31,7 @@ public class ReplisomeTracking {
 
         // Detection
         PartitionedGraph frames = detectReplisome(replisome, threshold, true);
-        frames.drawSpots(replisome, 5);
+        frames.drawSpots(replisome, 5,1);
 
         // Create cost function
         AbstractCost cost = new DistanceAndIntensityCost(imp, costmax, lambda);
@@ -71,7 +71,7 @@ public class ReplisomeTracking {
             }
             graph.add(spots);
         }
-        graph.drawSpots(imp, 5);
+        graph.drawSpots(imp, 5,1);
 
         return graph;
     }
