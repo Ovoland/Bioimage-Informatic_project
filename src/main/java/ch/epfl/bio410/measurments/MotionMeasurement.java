@@ -37,7 +37,7 @@ public class MotionMeasurement {
                 assert(j+1 <= trajectory.size());
                 Spot nextSpot = trajectory.get(j+1);
 
-                double distance = spot.distanceU(nextSpot, pixelWidth, pixelHeight);
+                double distance = spot.distanceMicroMeter(nextSpot, pixelWidth, pixelHeight);
                 //System.out.println("adding at index " + i  + "distance " + distance);
                 distances[i] += distance;
 
@@ -75,7 +75,7 @@ public class MotionMeasurement {
         return velocities;
     }
 
-    private static void plotMotion(double[] motion, String[] labels){
+    public static void plotMotion(double[] motion, String[] labels){
         Plot plot = new Plot(labels[0], labels[1], labels[2]);
         plot.setLimits(-1, motion.length,-0.01, Arrays.stream(motion).max().getAsDouble());
         double[] trajectoriesRange = new double[motion.length];

@@ -9,6 +9,7 @@ import ij.plugin.ChannelSplitter;
 
 import static ch.epfl.bio410.measurments.MotionMeasurement.plotMotion;
 
+
 public class LocalMotionMeasurement {
 
     public static void localMotionMeasurement(PartitionedGraph replisomes, PartitionedGraph bacterias, ImagePlus img) {
@@ -25,7 +26,7 @@ public class LocalMotionMeasurement {
         int[] idxReplisomeToShow = {1,10,40,80,100,120};
         for(int idx : idxReplisomeToShow) {
             double[] localMotionUnit = computeLocalMotionUnit(replisomes.get(idx), closestBacterias.get(idx),pixelWidth, pixelHeight);
-            String[] labelsMotion = {"Temporal evolation of local distance for replisome " + idx, "Time", "Method… (" + unit + "/s)"};
+            String[] labelsMotion = {"Temporal evolation of local distance for replisome " + idx, "Time", "Local displacement(" + unit + "/s)"};
 
             plotMotion(localMotionUnit,labelsMotion);
 
