@@ -113,7 +113,7 @@ public class SkeletonSegmentation {
                     }
                 }
             }
-            IJ.log(counter + " bacteria found");
+            //IJ.log(counter + " bacteria found");
         }
 
         return img;
