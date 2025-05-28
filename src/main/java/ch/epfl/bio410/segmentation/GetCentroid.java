@@ -5,10 +5,12 @@ import ch.epfl.bio410.graph.Spot;
 import ch.epfl.bio410.graph.Spots;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.frame.RoiManager;
 import ij.process.ImageConverter;
+import ij.text.TextWindow;
 
 public class GetCentroid {
     public static PartitionedGraph getCentroid(ImagePlus InputImg) {
@@ -16,9 +18,11 @@ public class GetCentroid {
 
         //to prevent the log: ParticleAnalyzer: threshold not set; assumed to be 0-0 ("Black background" not set)
         IJ.setAutoThreshold(img, "Default");
+        img.setCalibration(null);
 
         IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
-        IJ.run(img, "Analyze Particles...", "display clear exclude overlay add composite stack");
+        IJ.run(img, "Analyze Particles...", "pixel display clear exclude overlay add composite stack");
+
 
         // get the open ResultsTable
         ResultsTable rt = ResultsTable.getResultsTable();
@@ -60,6 +64,11 @@ public class GetCentroid {
                 IJ.log("No bacteria found in frame " + frames[idx]);
             }
         }
+
+        //Add the last spots to the graph
+        RoiManager roiManager = RoiManager.getInstance();
+        roiManager.close();
+
         graph.add(spots);
         return graph;
 

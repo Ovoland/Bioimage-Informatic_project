@@ -34,7 +34,7 @@ public class PartitionedGraph extends ArrayList<Spots> {
         return spots;
     }
 
-    public Overlay drawSpots(ImagePlus imp, int radius, int width) {
+    public Overlay drawSpots(ImagePlus imp, int radius, int width, String title) {
         Overlay overlay = imp.getOverlay();
         if (overlay == null) overlay = new Overlay();
         for(Spots spots : this) {
@@ -49,7 +49,7 @@ public class PartitionedGraph extends ArrayList<Spots> {
             }
         }
         ImagePlus out = imp.duplicate();
-        out.setTitle("Spots " + imp.getTitle() );
+        out.setTitle(title + imp.getTitle() );
         out.show();
         out.getProcessor().resetMinAndMax();
         out.setOverlay(overlay);
@@ -93,13 +93,13 @@ public class PartitionedGraph extends ArrayList<Spots> {
         return overlay;
     }
 
-    public void drawCentroid(ImagePlus InputImg, int radius) {
+    public void drawSpots2C(ImagePlus InputImg, int radius, int width, String title) {
         ImagePlus imp = InputImg.duplicate();
+        IJ.run(imp, "8-bit", "");
         ImagePlus[] channels = ChannelSplitter.split(imp);
         ImagePlus bacteria = channels[0];
         ImageConverter.setDoScaling(true);
-        IJ.run(imp, "8-bit", "");
-        this.drawSpots(bacteria,radius,1);
+        this.drawSpots(bacteria,radius,width, title);
     }
 
 }

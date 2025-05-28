@@ -13,6 +13,7 @@ import ij.plugin.ChannelSplitter;
 import ij.plugin.Duplicator;
 import ij.plugin.frame.RoiManager;
 import ij.process.ImageConverter;
+import ij.text.TextWindow;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -54,6 +55,9 @@ public class LevelSetSegmentation {
             ImagePlus segmented = WindowManager.getImage(segmentationTitle);
             ImagePlus segmentedProgress = WindowManager.getImage(segmentationProcessTitle);
 
+            segmented.hide();
+            segmentedProgress.hide();
+
             //Remove noisy outliners
             IJ.run(segmented, "Despeckle", "");
             segmentedStack.addSlice(segmented.getProcessor());
@@ -74,6 +78,11 @@ public class LevelSetSegmentation {
         ImagePlus process = new ImagePlus("Process", processedStack);
         segmentation.show();
         process.show();
+
+        TextWindow resultsWindow = (TextWindow) WindowManager.getWindow("Results");
+        if (resultsWindow != null) {
+            resultsWindow.close();
+        }
 
         return segmentation;
     }

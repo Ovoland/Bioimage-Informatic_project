@@ -16,6 +16,7 @@ import static ch.epfl.bio410.measurments.LocalMotionMeasurement.localMotionMeasu
 import static ch.epfl.bio410.measurments.MotionMeasurement.motionMeasurment;
 import static ch.epfl.bio410.segmentation.GetCentroid.getCentroid;
 import static ch.epfl.bio410.segmentation.LevelSetSegmentation.levelSetSegmentation;
+import static ch.epfl.bio410.segmentation.SkeletonSegmentation.skeletonSegmentation;
 import static ch.epfl.bio410.tracking.ReplisomeTracking.replisomeTracking;
 import static ch.epfl.bio410.ui.GUI.UserSelection;
 import static ch.epfl.bio410.ui.GUI.showGUI;
@@ -26,7 +27,9 @@ import static ch.epfl.bio410.ui.GUI.showGUI;
 @Plugin(type = Command.class, menuPath = "Plugins>BII>Replisome_tracking")
 public class main implements Command {
 
-	private String[] methods = {"Level Set", "Skeleton Segmentation"};
+	private String levelSet = "Level Set";
+	private String skeleton = "Skeleton";
+	private String[] methods = {levelSet, skeleton};
 
 	@Override
 	public void run() {
@@ -40,14 +43,12 @@ public class main implements Command {
 		if(UserSelection.loadSegmentation){
 			segmented = IJ.openImage(UserSelection.segmentedPath);
 		}else{
-			if(Objects.equals(UserSelection.method, methods[0])) {
+			if(Objects.equals(UserSelection.method, levelSet)) {
 				// Level Set Segmentation
 				segmented = levelSetSegmentation(imp);
-			} else if(Objects.equals(UserSelection.method, methods[1])) {
+			} else if(Objects.equals(UserSelection.method, skeleton)) {
 				// Skeleton Segmentation
-				IJ.run(imp, "Skeletonize (2D/3D)", "");
-				ImageConverter.setDoScaling(true);
-				segmented = imp;
+				segmented = skeletonSegmentation(imp,18);
 			} else {
 				IJ.error("Unknown segmentation method: " + UserSelection.method);
 				return;
@@ -58,6 +59,7 @@ public class main implements Command {
 
 
 		PartitionedGraph centroids = getCentroid(segmented);
+		centroids.drawSpots2C(imp, 5, 1, "Centroids");
 
 		// Replisome Detection
 		PartitionedGraph replisomes = replisomeTracking(imp);
@@ -65,6 +67,7 @@ public class main implements Command {
 
 		int[] replisomeToShow = {1};
 		localMotionMeasurement(replisomes, centroids,imp,replisomeToShow);
+
 	}
 
 

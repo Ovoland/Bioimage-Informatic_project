@@ -6,13 +6,16 @@ import ij.Prefs;
 import ij.measure.ResultsTable;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.frame.RoiManager;
+import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 
+import java.awt.*;
+
 public class SkeletonSegmentation {
-    public static void skeletonSegmentation(ImagePlus img, double bactLength){
+    public static ImagePlus skeletonSegmentation(ImagePlus img, double bactLength){
         ImagePlus[] channels = ChannelSplitter.split(img);
         ImagePlus bacteria = channels[0];
-        skeleton(bacteria, bactLength);
+        return skeleton(bacteria, bactLength);
     }
 
 
@@ -20,25 +23,26 @@ public class SkeletonSegmentation {
     This function will process the given ImagePlus img to identify the skeletons of the bacterias as ROIs through an
     extremity sweep of the image once it is made binary and skeletonized. Then, it transfers the ROIs to the input img
      */
-    private static void skeleton(ImagePlus img, double bactLength){
+    private static ImagePlus skeleton(ImagePlus img, double bactLength){
         ImagePlus impThresholded = img.duplicate();
-        ImagePlus imp = img.duplicate();
-        impThresholded.show();
+        //impThresholded.show();
 
         //Segmenting bacterias
         IJ.run(impThresholded, "Enhance Contrast...", "saturated=0.35 process_all");
+        ImageConverter.setDoScaling(true);
+        IJ.run(impThresholded, "8-bit", "");
         IJ.run(impThresholded, "Make Binary", "calculate");
         Prefs.blackBackground = false;
         IJ.run(impThresholded, "Skeletonize", "stack");
-        drawingBacteria(impThresholded, bactLength);
 
         //Make measurements & delimiting ROIs
-        IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
-        IJ.run(impThresholded, "Analyze Particles...", "display clear exclude composite overlay add stack");
+        //IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
+        //IJ.run(impThresholded, "Analyze Particles...", "display clear exclude composite overlay add stack");
 
         //get ROI manager
-        getRoi(impThresholded, imp);
-
+        //getRoi(impThresholded, imp);
+        //drawingBacteria(impThresholded, bactLength);
+        return impThresholded;
     }
 
 
@@ -50,9 +54,9 @@ public class SkeletonSegmentation {
     This is done in a duplicate of the input ImagePlus img. In the original, only the end pixel of the branch found and
     its 8 neighbors are suppressed to create a space with the surrounding bacterias and prevent their grouping.
      */
-    private static void drawingBacteria(ImagePlus img, double bactLength) {
+    private static ImagePlus drawingBacteria(ImagePlus img, double bactLength) {
         ImagePlus impSkeleton = img.duplicate();
-        impSkeleton.show();
+        //impSkeleton.show();
 
         int nFrames = impSkeleton.getNFrames();
         int sizeX = impSkeleton.getWidth();
@@ -65,7 +69,7 @@ public class SkeletonSegmentation {
             img.setPosition(1, 1, 1 + t);
             ImageProcessor ip = impSkeleton.getProcessor();
             ImageProcessor ipOut = img.getProcessor();
-            IJ.log("Beginning Processing of frame " + (t + 1));
+            //IJ.log("Beginning Processing of frame " + (t + 1));
             int counter = 0;
 
             //Passing through images
@@ -108,9 +112,9 @@ public class SkeletonSegmentation {
                     }
                 }
             }
-            IJ.log(counter + " bacteria found");
+            //IJ.log(counter + " bacteria found");
         }
-        impSkeleton.close();
+        return impSkeleton;
 
     }
 
