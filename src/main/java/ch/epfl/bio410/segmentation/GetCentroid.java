@@ -18,6 +18,8 @@ public class GetCentroid {
 
         //to prevent the log: ParticleAnalyzer: threshold not set; assumed to be 0-0 ("Black background" not set)
         IJ.setAutoThreshold(img, "Default");
+
+        //Allow the measurement in pixel unit to be made instead of beeing made in micro meter
         img.setCalibration(null);
 
         IJ.run("Set Measurements...", "area mean min centroid center perimeter bounding stack display redirect=None decimal=5");
