@@ -41,8 +41,8 @@ public class SkeletonSegmentation {
 
         //get ROI manager
         //getRoi(impThresholded, imp);
-        drawingBacteria(impThresholded, bactLength);
-        return impThresholded;
+        ImagePlus impSegmented = drawingBacteria(impThresholded, bactLength);
+        return impSegmented;
     }
 
 
@@ -56,6 +56,7 @@ public class SkeletonSegmentation {
      */
     private static ImagePlus drawingBacteria(ImagePlus img, double bactLength) {
         ImagePlus impSkeleton = img.duplicate();
+        //img.show();
         //impSkeleton.show();
 
         int nFrames = impSkeleton.getNFrames();
@@ -112,8 +113,9 @@ public class SkeletonSegmentation {
                     }
                 }
             }
-            //IJ.log(counter + " bacteria found");
+            IJ.log(counter + " bacteria found");
         }
+
         return img;
 
     }
