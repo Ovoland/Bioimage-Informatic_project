@@ -21,7 +21,7 @@ public class LocalMotionMeasurement {
         PartitionedGraph closestBacterias = findNearestBacteria(replisomes, bacterias,pixelWidth, pixelHeight);
 
         replisomes.addAll(closestBacterias);
-        replisomes.drawSpots(img,2,1);
+        //replisomes.drawSpots2C(img,2,1, "Closest Bacteria ");
 
         int[] idxReplisomeToShow = replisomeToShow;
         for(int idx : idxReplisomeToShow) {
