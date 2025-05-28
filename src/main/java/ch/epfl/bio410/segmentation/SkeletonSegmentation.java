@@ -41,7 +41,7 @@ public class SkeletonSegmentation {
 
         //get ROI manager
         //getRoi(impThresholded, imp);
-        //drawingBacteria(impThresholded, bactLength);
+        drawingBacteria(impThresholded, bactLength);
         return impThresholded;
     }
 
@@ -114,7 +114,7 @@ public class SkeletonSegmentation {
             }
             //IJ.log(counter + " bacteria found");
         }
-        return impSkeleton;
+        return img;
 
     }
 
