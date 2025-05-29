@@ -56,6 +56,7 @@ public class LocalMotionMeasurement {
                 //Store the minimum distance from the replisome spot to the bacteria candidates
                 double minDistance = Double.MAX_VALUE;
                 int idxClosestBacteria = -1;
+                boolean foundBacteria = false;
                 //Among these bacteria determine which one is the closest to the replisome spot
                 for (int bactIdx = 0; bactIdx < bacteriaCandidates.size(); ++bactIdx) {
                     Spot bacteriaSpot = bacteriaCandidates.get(bactIdx);
@@ -65,9 +66,16 @@ public class LocalMotionMeasurement {
                     if (distance < minDistance) {
                         minDistance = distance;
                         idxClosestBacteria = bactIdx;
+                        foundBacteria = true;
                     }
                 }
-                Spot closestBacteriaSpot = bacteriaCandidates.get(idxClosestBacteria);
+                Spot closestBacteriaSpot;
+                if(foundBacteria){
+                    closestBacteriaSpot = bacteriaCandidates.get(idxClosestBacteria);
+                }else{
+                    closestBacteriaSpot = new Spot(replisomeSpot.x, replisomeSpot.y, replisomeSpot.t, 0);
+                }
+
 
                 closestBacteriaSpots.add(closestBacteriaSpot);
             }

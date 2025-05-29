@@ -65,6 +65,7 @@ public class main implements Command {
 		PartitionedGraph replisomes = replisomeTracking(imp);
 		motionMeasurment(imp, replisomes, UserSelection.deltaT);
 
+		//int[] replisomeToShow = {1,10,100,300,600};
 		int[] replisomeToShow = {1};
 		localMotionMeasurement(replisomes, centroids,imp,replisomeToShow);
 

@@ -44,7 +44,7 @@ public class GetCentroid {
 
         PartitionedGraph graph = new PartitionedGraph();
 
-        double currentSlice = 1;
+        double currentSlice = 0;
         Spots spots = new Spots();
 
         for (int idx = 0; idx < frames.length; idx++) {

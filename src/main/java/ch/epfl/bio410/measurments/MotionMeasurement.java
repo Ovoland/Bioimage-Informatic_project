@@ -21,11 +21,15 @@ public class MotionMeasurement {
         String unit = calImp.getUnit();
 
         double[] distances = computeTraveledDistance(trajectories, pixelWidth, pixelHeight);
+
         String[] labelsDistances = {"Total distance travelled by replisome", "Replisome Index", "Total displacement (" + unit + ")"};
         plotMotion(distances, labelsDistances);
         double[] velocities = computeVelocity(distances, trajectories, deltaT);
         String[] labelsMotion = {"Mean velocity per replisome", "Replisome Index", "Speed (" + unit + "/s)"};
         plotMotion(velocities, labelsMotion);
+
+        //plotMotionAcrossTime(velocities, trajectories, new String[]{"Mean velocity across time", "Replisome Index", "Speed (" + unit + "/s)"});
+        //plotUnitMotion(trajectories.get(0), pixelWidth, pixelHeight, new String[]{"Unit motion of replisome", "Time", "Displacement (" + unit + ")"});
     }
 
     private static double[] computeTraveledDistance(PartitionedGraph trajectories, double pixelWidth, double pixelHeight){
@@ -41,16 +45,6 @@ public class MotionMeasurement {
                 //System.out.println("adding at index " + i  + "distance " + distance);
                 distances[i] += distance;
 
-            }
-        }
-        for(Spots trajectory: trajectories){
-            for(int i = 0; i < trajectory.size() - 1; i++){
-                Spot spot = trajectory.get(i);
-                assert(i+1 <= trajectory.size());
-                Spot nextSpot = trajectory.get(i+1);
-
-                double distance = spot.distance(nextSpot);
-                distances[i] += distance;
             }
         }
         return distances;
@@ -84,6 +78,53 @@ public class MotionMeasurement {
         }
         plot.addPoints(trajectoriesRange, motion,3);
         plot.show();
+    }
+
+    public static void plotMotionAcrossTime(double [] motion, PartitionedGraph replisomes, String[] labels){
+        Plot plot = new Plot(labels[0], labels[1], labels[2]);
+        plot.setLimits(-1, replisomes.size(), -0.01, Arrays.stream(motion).max().getAsDouble());
+        double[] timeRange = new double[motion.length];
+        for(int i = 0; i < replisomes.size(); ++i){
+            Spots spots = replisomes.get(i);
+            Spot firstSpot = spots.get(0);
+            timeRange[i] = firstSpot.t;
+
+
+        }
+        plot.addPoints(timeRange, motion,3);
+        plot.show();
+    }
+
+    public static void plotUnitMotion(Spots replisome,double pixelWidth, double pixelHeight,String[] labels){
+        double[] distances = computeUnitMotion(replisome, pixelWidth, pixelHeight);
+        Plot plot = new Plot(labels[0], labels[1], labels[2]);
+        plot.setLimits(-1, replisome.size(), -0.01, Arrays.stream(distances).max().getAsDouble());
+        plot.addPoints(getReplisomeTimeRange(replisome), distances, 3);
+        plot.show();
+    }
+
+    private static double[] getReplisomeTimeRange(Spots replisome){
+        double[] timeRange = new double[replisome.size()];
+        for(int i = 0; i < replisome.size(); ++i){
+            Spot spot = replisome.get(i);
+            timeRange[i] = spot.t;
+        }
+        return timeRange;
+    }
+
+    private static double[] computeUnitMotion(Spots replisome, double pixelWidth, double pixelHeight){
+        double[] distances = new double[replisome.size()];
+
+        for(int j = 0; j < replisome.size() - 1; ++j){
+            Spot spot = replisome.get(j);
+            assert(j+1 <= replisome.size());
+            Spot nextSpot = replisome.get(j+1);
+
+            double distance = spot.distanceMicroMeter(nextSpot, pixelWidth, pixelHeight);
+            //System.out.println("adding at index " + i  + "distance " + distance);
+            distances[j] = distance;
+        }
+        return distances;
     }
 
     private static void annotateImage(ImagePlus img, double[] distances,PartitionedGraph trajectories ){
