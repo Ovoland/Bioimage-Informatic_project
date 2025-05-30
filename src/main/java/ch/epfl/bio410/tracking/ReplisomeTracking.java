@@ -39,7 +39,7 @@ public class ReplisomeTracking {
         // Linking trajectories
         PartitionedGraph trajectories = trackToNearestTrajectory(frames, cost);
 
-        //trajectories.drawLines(replisome);
+        trajectories.drawLines(replisome);
 
         return trajectories;
     }
